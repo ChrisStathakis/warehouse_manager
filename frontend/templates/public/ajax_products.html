@@ -1,0 +1,23 @@
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>ΠΡΟΪΟΝΤΑ</th>
+            <th>ΤΙΜΗ</th>
+            <th>ΤΙΜΗ/ΚΙΛΟ</th>
+            <th>ΕΚΠΤΩΤΙΚΗ</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for ele in qs %}
+            <tr>
+                <td>{{ ele.title }}</td>
+                <td>{{ ele.value }}</td>
+                <td>{{ ele.value_per_unit }}</td>
+
+                <td>{{ ele.value_discount }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+
+</table>

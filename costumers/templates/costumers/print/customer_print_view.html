@@ -1,0 +1,154 @@
+<!DOCTYPE html> {% load static %}
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>{{ instance.costumer }} | {{ instance.get_series_display }} | {{ instance.number }}</title>
+        <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+        <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<!------ Include the above in your HEAD tag ---------->
+        <style>
+            .my_p{
+                padding-right: 3rem !important;
+                padding-left: 3rem !important;
+            }
+            .bottom {
+                position: absolute;
+                bottom: 10px;
+            }
+            table {
+                border: 2px ;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container" style="height: 29.7cm;">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body p-0">
+                            <div class="row pb-5 p-5">
+
+                            <div class="col-6"></div>
+                                <div class="col-12">
+                                     <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>ΗΜΕΡΟΜΗΝΙΑ</th>
+                                            <th>ΥΠΟΛΟΙΠΟ</th>
+                                            <th>ΔΙΑΦΟΡΑ</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>{{ request.GET.date_range }} ("μηνας"-ημερα- χρονια")</td>
+                                            <td>{{ instance.tag_balance }}</td>
+                                            <td>{{ diff|floatformat:2 }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                </div>
+                                <div class="col-md-6">
+                                    <p class="font-weight-bold mb-4">Πληροφοριες </p>
+                                    <table class="table table-bordered table-sm">
+                                        <tbody>
+                                            <tr>
+                                                <th>Επωνυμία</th>
+                                                <td>{{ instance.title }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Επάγγελμα</th>
+                                                <td>{{ instance.eponimia }}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    {% comment %}
+                                    <p class="mb-1">John Doe, Mrs Emma Downson</p>
+                                    <p>Acme Inc</p>
+                                    <p class="mb-1">Berlin, Germany</p>
+                                    <p class="mb-1">6781 45P</p>
+                                    {% endcomment %}
+                                </div>
+                                <div class="col-6"></div>
+
+                                <div class="col-md-6">
+                                    <h4 style='color:red'>ΤΙΜΟΛΟΓΙΑ</h4>
+                                    <table class="table table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th class="border-0 text-uppercase small font-weight-bold">ΗΜΕΡΟΜΗΝΙΑ</th>
+                                                <th class="border-0 text-uppercase small font-weight-bold">ΤΙΤΛΟΣ</th>
+                                                <th class="border-0 text-uppercase small font-weight-bold">ΠΟΣΟ</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for ele in orders %}
+                                                <tr>
+
+                                                    <td>{{ ele.date|date:"d/m/y" }}</td>
+                                                    <td>{{ ele }}</td>
+                                                    <td>{{ ele.tag_value }}</td>
+
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="col-md-6">
+                                    <h4 style="color: green">ΠΛΗΡΩΜΕΣ</h4>
+                                    <table class="table table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th class="border-0 text-uppercase small font-weight-bold">ΗΜΕΡΟΜΗΝΙΑ</th>
+                                                <th class="border-0 text-uppercase small font-weight-bold">ΤΙΤΛΟΣ</th>
+                                                <th class="border-0 text-uppercase small font-weight-bold">ΠΟΣΟ</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for ele in payments %}
+                                                <tr>
+
+                                                    <td>{{ ele.date|date:"d/m/y" }}</td>
+                                                    <td>{{ ele }}</td>
+                                                    <td>{{ ele.tag_value }}</td>
+
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div class="row my_p">
+
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row bottom">
+                <div class="col-2">
+                    <table class="table table-bordered">
+                        <thead>
+                        <tr>
+                            <th>ΣΥΝΟΛΑ</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>ΤΙΜΟΛΟΓΙΑ {{ total_orders|floatformat:2 }}</td>
+                        </tr>
+                        <tr>
+                            <td>ΠΛΗΡΩΜΕΣ {{ total_payments|floatformat:2 }}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+
+        </div>
+  </body>
+</html>

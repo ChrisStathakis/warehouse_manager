@@ -1,0 +1,38 @@
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>ΠΡΟΪΟΝ</th>
+            <th>ΤΙΜΗ</th>
+            <th>ΤΙΜΗ/ΜΟΝΑΔΑ | ΕΚΠΤΩΤΙΚΗ</th>
+            <th>-</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for ele in products %}
+            <tr>
+                <td>{{ ele }}</td>
+                <td>{{ ele.value }}</td>
+                <td>{{ ele.value_per_unit }} | {{ ele.value_discount }}</td>
+                <td><button data-href="{% url 'ajax_manipulate_product_category' object.id ele.id 'add' %}" value="{{ele.id}}" class="btn btn-success add_class"><i class="fa fa-plus"></i></button> </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+<script>
+    $(".add_class").click(function(evt){
+        evt.preventDefault();
+        const btn = $(this);
+        const href = btn.attr('data-href');
+        $.ajax({
+            url: href,
+            dataType: "json",
+            success: function(data){
+                $("#category_products").html(data.result)
+            }
+        })
+
+    });
+
+</script>

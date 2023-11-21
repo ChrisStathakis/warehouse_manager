@@ -1,0 +1,118 @@
+
+<div>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>ΠΡΟΪΟΜ</th>
+                <th>ΧΑΜ. ΤΙΜΗ</th>
+                <th>ΤΙΜΗ ΠΩΛΗΣΗΣ</th>
+                <th>ΚΕΡΔΟΣ</th>
+                <th>ΠΡΟΜ.</th>
+                <th>ΛΕΠΤΟΜ.</th>
+                <th>ΔΙΑΓΡΑΦΗ</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            {% for ele in qs %}
+                <tr>
+                    <td><a style="text-decoration: none;color:black" target="_blank" href="{{ ele.get_edit_url }}">{{ ele.title}}</a> </td>
+                    <td>{{ ele.tag_price_buy}}</td>
+                    <td>{{ ele.tag_final_value}}</td>
+                    <td>{{ ele.margin}} </td>
+                    <td>{{ ele.tag_vendors}} </td>
+                    <td><a data-href="{% url 'vendors:ajax_product_analysis' ele.id %}" class='btn btn-primary btn-round quick-view'><i class='fa fa-eye'></i></a> </td>
+                    <td><button data-href="{% url 'vendors:ajax_manipulate_product_category' category.id ele.id 'delete' %}" class='btn btn-danger delete_class'><i class='fa fa-trash'></i></button></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+ </div>
+<div id="modal_area"></div>
+
+
+<script>
+        $('.quick-view').click(function (evt) {
+            evt.preventDefault();
+            $('#modal_area').empty();
+            const myBtn = $(this);
+            const url = myBtn.attr('data-href');
+            $.ajax({
+                method: 'GET',
+                url: url,
+                dataType: 'json',
+
+                success: function (data) {
+                    $('#modal_area').html(data.result);
+                    $('#quick_view_modal').modal('show');
+                }
+            })
+        })
+    </script>
+
+    <script>
+
+        $(".search_button").keyup(function(evt){
+            evt.preventDefault();
+            const form_data = $(this);
+            const value = form_data.val();
+            const url = form_data.attr("data-href");
+
+            $.ajax({
+                url: url+ `?search_name=${value}`,
+                dataType: "json",
+
+                success: function(data){
+                    $("#product_container").html(data.result);
+                }
+            })
+        })
+
+
+        $(".add_class").click(function(evt){
+            evt.preventDefault();
+            const btn = $(this);
+            const href = btn.attr('data-href');
+            $.ajax({
+                url: href,
+                dataType: "json",
+                success: function(data){
+                    $("#category_products").html(data.result)
+                }
+            })
+
+        });
+
+
+        $(".delete_class").click(function(evt){
+            console.log("grg")
+            evt.preventDefault();
+            const btn = $(this);
+            const url = btn.attr("data-href")
+            $.ajax({
+                url: url,
+                dataType: "json",
+                success: function(data){
+                    $("#category_products").html(data.result)
+                }
+            })
+
+        })
+
+        $(".edit_class").click(function(evt){
+            evt.preventDefault()
+            const btn = $(this);
+            const url = btn.attr("data-href");
+            $("#modal_area").empty();
+            $.ajax({
+                url: url,
+                dataType: "json",
+                success: function(data){
+                    $("#modal_area").html(data.form_data)
+                    $('#editModal').modal('show');
+
+                }
+            })
+        })
+    </script>

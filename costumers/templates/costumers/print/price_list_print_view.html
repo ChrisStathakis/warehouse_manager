@@ -1,0 +1,98 @@
+<!DOCTYPE html> {% load static %}
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>{{ instance.costumer }} | {{ instance.get_series_display }} | {{ instance.number }}</title>
+        <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+        <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<!------ Include the above in your HEAD tag ---------->
+        <style>
+            body { font-size: 120%; }
+
+            .my_p{
+                padding-right: 3rem !important;
+                padding-left: 3rem !important;
+            }
+            .bottom {
+                position: absolute;
+                bottom: 10px;
+            }
+            table {
+                border: 2px ;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container" style="height: 29.7cm;">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body p-0">
+                            <div class="row pb-5 p-5">
+
+                            <div class="col-6"></div>
+                                <div class="col-12">
+                                     <table class="table table-bordered center">
+                                    <thead>
+                                        <tr>
+                                            <th>ΤΙΜΟΚΑΤΑΛΟΓΟΣ</th>
+
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>{{ instance.title }}</td>
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                </div>
+                                <br />
+                                <hr />
+                                <br />
+                                
+
+                            </div>
+
+                            <div class="row my_p">
+
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+                    <table class="table table-bordered">
+                       <thead>
+                           <tr>
+                               <th colspan="2">ΠΡΟΪΟΝ</th>
+                               <th>ΤΙΜΗ</th>
+                               <th>ΤΙΜΗ/ΜΟΝ.</th>
+                               <th>ΤΙΜΗ ΕΚΠΤ.</th>
+
+                           </tr>
+                       </thead>
+                   <tbody>
+                       {% for product  in qs %}
+                           <tr>
+                               <td style="font-weight: bold;font-size: x-large;"  class="lead" colspan="2">{{ product.title }} </td>
+                               <td  class="">{{ product.value }} €</td>
+                               <td  class="lead">{{ product.value_per_unit }} €</td>
+                               <td  class="lead">{{ product.value_discount }} €</td>
+                           </tr>
+                       {% endfor %}
+                   </tbody>
+               </table>
+               </div>
+
+            </div>
+
+
+        </div>
+  </body>
+</html>

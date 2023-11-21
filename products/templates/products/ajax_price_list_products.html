@@ -1,0 +1,100 @@
+<div class="card">
+    <div id="modal_area"></div>
+    <div class="card-header">
+        <h4>ΠΡΟΪΟΝΤΑ</h4>
+    </div>
+    <div class="card-body">
+        <table class="table">
+            <thead>
+            <tr>
+                <th>-</th>
+                <th>ΠΡΟΪΟΝ</th>
+                <th>ΤΙΜΗ/ΑΝΑ ΜΟΝΑΔΑ/ ΕΚΠΤΩΤΙΚΗ</th>
+                <th>ΕΠΕΞΕΡΓΑΣΙΑ</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for ele in qs %}
+                <tr>
+                    <td>
+                        <button data-href="{% url 'ajax_manipulate_product_category' object.id ele.id 'delete' %}" 
+                        class="btn btn-danger delete_class"><i class="fa fa-trash"></i></button>
+                     </td>
+                    <td>{{ ele.title }}</td>
+                    <td>{{ele.value}} | {{ ele.value_per_unit}} | {{ ele.value_discount }}<td>
+                    <td>
+                                                <!-- Button trigger modal -->
+                       <!-- Button trigger modal -->
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal_{{ ele.id}}">
+                            <i class="fa fa-edit"> </i>
+                        </button>
+                        
+                        <!-- Modal -->
+                        <div class="modal fade" id="exampleModal_{{ ele.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">{{ ele.title }}</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                                </div>
+                                <div class="modal-body">
+                                    <form method="post" action='{% url "edit_product_submit" object.id ele.id %}'>
+                                        {% csrf_token %}
+                                        <div class="form-group">
+                                          <label for="exampleInputEmail1">ΟΝΟΜΑΣΙΑ</label>
+                                          <input type="text" value="{{ ele.title }}" name="title" class="form-control" required>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="exampleInputEmail1">ΤΙΜΗ</label>
+                                            <input step="0.01 type="number" value="{{ ele.value }}" name="value" class="form-control" required>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="exampleInputEmail1">ΤΙΜΗ ΑΝΑ ΜΟΝΑΔΑ</label>
+                                            <input step="0.01 type="number" value="{{ ele.value_per_unit }}" name="value_per_unit" class="form-control" required>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="exampleInputEmail1">ΕΚΠΤΩΤΙΚΗ ΤΙΜΗ</label>
+                                            <input step="0.01 type="number" value="{{ ele.value_discount }}" name="value_discount" class="form-control" required>
+                                        </div>
+                                        
+                                        <button type="submit" class="btn btn-primary"> <i class="fa fa-save"> </i> </button>
+
+                                      </form>
+                                </div>
+
+                            </div>
+                            </div>
+                        </div>
+
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+
+<script>
+     $(".delete_class").click(function(evt){
+            evt.preventDefault();
+            const btn = $(this);
+            const url = btn.attr("data-href")
+            $.ajax({
+                url: url,
+                dataType: "json",
+                success: function(data){
+                    $("#category_products").html(data.result)
+                }
+            })
+
+        })
+
+   
+</script>

@@ -1,0 +1,216 @@
+{% extends 'dashboard.html' %} {% load render_table from django_tables2 %}
+
+{% block content %}
+    <div class="content">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h4>{{ category.name }}</h4>
+                        <button class="btn btn-primary"
+                                type="button"
+                                data-toggle="collapse"
+                                data-target="#filters"
+                                aria-expanded="false"
+                                aria-controls="collapseExample"
+                        >Filters
+                        </button>
+                         <a href='{{ back_url }}' class='btn btn-warning pull-right'>Επιστροφη</a>
+                        <a href="{{ request.path }}" class="btn btn-danger">Καθαρισμος</a>
+                    </div>
+                    <div class="card-body">
+                        <div class="collapse" id="filters">
+                            <form class="form" method="get">
+                                <div class="row">
+                                    {% include 'filters/my_filters.html' %}
+                                </div>
+                                <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> Αποθηκευση </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="accordion" id="accordionExample">
+              <div class="card">
+                <div class="card-header" id="headingOne">
+                  <h2 class="mb-0">
+                    <button class="btn btn-info" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                     ΠΡΟΪΟΝΤΑ ΚΑΤΗΓΟΡΙΑΣ
+                    </button>
+                  </h2>
+                </div>
+
+                <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
+                  <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h6>Προϊόντα</h6>
+                        <a target="_blank" href="{% url 'vendors:print_category' category.id %}?vendor_name={{ request.GET.vendor_name }}" class="btn btn-info"><i class="fa fa-print"></i> </a>
+                    </div>
+                    <div class="card-body">
+                        <div id="category_products">
+                            {% include "categories/ajax/ajax_category_products.html" %}
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-header" id="headingTwo">
+                  <h2 class="mb-0">
+                    <button class="btn btn-success" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                      ΠΡΟΣΘΗΚΗ ΠΡΟΪΟΝΤΟΣ
+                    </button>
+                  </h2>
+                </div>
+                <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
+                  <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <a href="{% url 'vendors:category_list' %}" class="btn btn-warning">ΕΠΙΣΤΡΟΦΗ</a>
+                        <h4>ΠΡΟΪΟΝΤΑ</h4>
+
+                        <!-- Button trigger modal -->
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+                            ΔΗΜΙΟΥΡΓΙΑ ΠΡΟΪΟΝΤΟΣ
+                        </button>
+
+                        <!-- Modal -->
+                        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">ΔΗΜΙΟΥΡΓΙΑ ΠΡΟΪΟΝΤΟΣ</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                                </div>
+                                <div class="modal-body">
+                                    <form method="post" action="{% url 'vendors:create_product_from_category_view' category.id %}">
+                                        {% csrf_token %}
+                                        {{ create_product }}
+                                        <button type="submit" class="btn btn-success"> Save </button>
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+                        <form>
+                            <input data-href="{% url 'vendors:products_ajax_search' category.id %}" name="search_name" type="text" class="form-control search_button" placeholder="Αναζήτηση">
+                        </form>
+                    </div>
+                    <div class="card-body" id="product_container">
+                        {% include "categories/ajax/ajax_products_search.html" %}
+                    </div>
+                </div>
+            </div>
+                </div>
+              </div>
+
+            </div>
+
+
+        <div class="row">
+
+
+        </div>
+
+    </div>
+
+    <div id="modal_area"></div>
+
+{% endblock %}
+
+{% block extra_js %}
+    <script>
+        $('.quick-view').click(function (evt) {
+            evt.preventDefault();
+            $('#modal_area').empty();
+            const myBtn = $(this);
+            const url = myBtn.attr('data-href');
+            $.ajax({
+                method: 'GET',
+                url: url,
+                dataType: 'json',
+
+                success: function (data) {
+                    $('#modal_area').html(data.result);
+                    $('#quick_view_modal').modal('show');
+                }
+            })
+        })
+    </script>
+
+    <script>
+
+        $(".search_button").keyup(function(evt){
+            evt.preventDefault();
+            const form_data = $(this);
+            const value = form_data.val();
+            const url = form_data.attr("data-href");
+
+            $.ajax({
+                url: url+ `?search_name=${value}`,
+                dataType: "json",
+
+                success: function(data){
+                    $("#product_container").html(data.result);
+                }
+            })
+        })
+
+
+        $(".add_class").click(function(evt){
+            evt.preventDefault();
+            const btn = $(this);
+            const href = btn.attr('data-href');
+            $.ajax({
+                url: href,
+                dataType: "json",
+                success: function(data){
+                    $("#category_products").html(data.result)
+                }
+            })
+
+        });
+
+
+        $(".delete_class").click(function(evt){
+            console.log("grg")
+            evt.preventDefault();
+            const btn = $(this);
+            const url = btn.attr("data-href")
+            $.ajax({
+                url: url,
+                dataType: "json",
+                success: function(data){
+                    $("#category_products").html(data.result)
+                }
+            })
+
+        })
+
+        $(".edit_class").click(function(evt){
+            evt.preventDefault()
+            const btn = $(this);
+            const url = btn.attr("data-href");
+            $("#modal_area").empty();
+            $.ajax({
+                url: url,
+                dataType: "json",
+                success: function(data){
+                    $("#modal_area").html(data.form_data)
+                    $('#editModal').modal('show');
+
+                }
+            })
+        })
+    </script>
+{% endblock %}

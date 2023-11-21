@@ -1,0 +1,111 @@
+<!DOCTYPE html> {% load static %}
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>{{ instance.costumer }} | {{ instance.get_series_display }} | {{ instance.number }}</title>
+        <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+        <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<!------ Include the above in your HEAD tag ---------->
+        <style>
+            body { font-size: 100%; }
+
+            .my_p{
+                padding-right: 3rem !important;
+                padding-left: 3rem !important;
+            }
+            .bottom {
+                position: absolute;
+                bottom: 10px;
+            }
+            table {
+                border: 2px ;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container" style="height: 29.7cm;">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body p-0">
+                            <div class="row pb-5 p-5">
+
+                            <div class="col-6"></div>
+                                <div class="col-12">
+                                     <table class="table table-bordered center">
+                                        <thead>
+                                            <tr>
+                                                <th>CATEGORY {{ category.title }}</th>
+                                            </tr>
+                                        </thead>
+                                </table>
+                                </div>
+                                <br />
+                                <hr />
+                                <br />
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                {% for ele in qs %}
+                    <div style="margin-bottom:2%" class="col-12">
+                        <div class="card">
+                            <div class="card-header center">
+                                <h4 class="text-center">{{ ele }}</h4>
+                                <table class="table">
+                                    <thead>
+                                    <tr>
+                                        <th>ΦΠΑ: {{ ele.get_taxes_modifier_display }}%</th>
+                                        <th>ΤΙΜΗ ΑΓΟΡΑΣ {{ ele.price_buy }}</th>
+                                        <th>ΤΙΜΗ ΠΩΛΗΣΗΣ: {{ ele.value }}</th>
+                                        <th>ΠΟΣΟΣΤΟ ΚΕΡΔΟΥΣ: {{ ele.margin }} %</th>
+                                    </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                            <div clas="card-body">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>ΠΡΟΜΗΘΕΥΤΗΣ</th>
+                                            <th>SKU</th>
+                                            <th>ΤΙΜΗ ΠΡΟ ΦΠΑ</th>
+                                            <th>ΕΚΠΤΩΣΗ - ΤΙΜΗ</th>
+                                            <th>ΤΙΜΗ ΜΕΤΑ ΦΠΑ</th>
+                                            <th>ΕΞΟΔΑ</th>
+                                            <th>ΤΕΛΙΚΗ ΤΙΜΗ</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for vendor in ele.product_vendors.all %}
+                                            <tr>
+                                                <td>{{ vendor.vendor }}</td>
+                                                <td>{{ vendor.sku }}</td>
+                                                <td>{{ vendor.value }} €</td>
+                                                <td>{{ vendor.discount }} % | {{ vendor.clean_value }} €</td>
+                                                <td>{{ vendor.taxes_value }} €</td>
+                                                <td>{{ vendor.added_value }} €</td>
+                                                <td>{{ vendor.final_value }} €</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                {% endfor %}
+            </div>
+
+
+
+
+        </div>
+  </body>
+</html>

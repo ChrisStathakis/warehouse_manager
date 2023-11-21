@@ -1,0 +1,56 @@
+<InvoicesDoc xmlns="http://www.aade.gr/myDATA/invoice/v1.0" xmlns:icls="https://www.aade.gr/myDATA/incomeClassificaton/v1.0" >
+
+    <invoice>
+
+        <issuer>
+            <vatNumber>{{ card.afm }}</vatNumber>
+            <country>GR</country>
+            <branch>0</branch>
+        </issuer>
+        <counterpart>
+            <vatNumber>{{ costumer.afm }}</vatNumber>
+            <country>GR</country>
+            <branch>0</branch>
+        </counterpart>
+        <invoiceHeader>
+            <series>{{ instance.series }}</series>
+            <aa>{{ instance.number }}</aa>
+            <issueDate>{{ instance.date|date:"Y-m-d" }}</issueDate>
+            <invoiceType>{{ instance.order_type }}</invoiceType>
+            <currency>EUR</currency>
+
+        </invoiceHeader>
+        <paymentMethods>
+            <paymentMethodDetails>
+                <type>1</type>
+                <amount>237.00</amount>
+            </paymentMethodDetails>
+        </paymentMethods>
+        <invoiceDetails>
+            <lineNumber>1</lineNumber>
+            <netValue>5000.00</netValue>
+            <vatCategory>1</vatCategory>
+            <vatAmount>1200.00</vatAmount>
+            <incomeClassification>
+                <icls:classificationType>E3_561_001</icls:classificationType>
+                <icls:classificationCategory>category1_1</icls:classificationCategory>
+                <icls:amount>200.00</icls:amount>
+            </incomeClassification>
+        </invoiceDetails>
+        <invoiceSummary>
+            <totalNetValue>{{ instance.clean_value }}</totalNetValue>
+            <totalVatAmount>{{ instance.taxes_value }}</totalVatAmount>
+            <totalWithheldAmount>0.00</totalWithheldAmount>
+            <totalFeesAmount>0.00</totalFeesAmount>
+            <totalStampDutyAmount>0.00</totalStampDutyAmount>
+            <totalOtherTaxesAmount>0.00</totalOtherTaxesAmount>
+            <totalDeductionsAmount>0.00</totalDeductionsAmount>
+            <totalGrossValue>{{ instance.final_value }}</totalGrossValue>
+            <incomeClassification>
+                <icls:classificationType>E3_561_001</icls:classificationType>
+                <icls:classificationCategory>category1_1</icls:classificationCategory>
+                <icls:amount>200.00</icls:amount>
+            </incomeClassification>
+        </invoiceSummary>
+    </invoice>
+</InvoicesDoc>

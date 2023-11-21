@@ -1,0 +1,73 @@
+{% extends "public/base.html" %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4>ΠΡΟΪΟΝΤΑ</h4>
+                    <form class="form"></form>
+                    <input data-href="{% url 'ajax_search_products' %}" type="text" class="form-control"
+                           id="search_products" name="search_name"
+                    />
+                </div>
+                <div class="card-body" id="product_container">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>ΠΡΟΪΟΝΤΑ</th>
+                                <th>ΤΙΜΗ</th>
+                                <th>ΤΙΜΗ/ΚΙΛΟ</th>
+                                <th>ΕΚΠΤΩΤΙΚΗ</th>
+                            </tr>
+                       </thead>
+                        <tbody>
+                            {% for ele in qs %}
+                                <tr>
+                                    <td>{{ ele.title }}</td>
+                                    <td>{{ ele.value }}</td>
+                                    <td>{{ ele.value_per_unit }}</td>
+                                    <td>{{ ele.value_discount }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}
+
+{% block extra_js %}
+
+     <script>
+        $('#search_products').keyup(function (evt) {
+            evt.preventDefault();
+
+            console.log('so i will sent something');
+
+            const my_input = $(this);
+            const url = my_input.attr('data-href');
+            const value = my_input.val();
+
+            $.ajax({
+                method: 'GET',
+                dataType: 'json',
+                url: url + '?search_name=' + value,
+
+                success: function (data) {
+                    $('#product_container').html(data.result)
+                }
+
+            })
+
+        })
+    </script>
+
+
+{% endblock %}
+

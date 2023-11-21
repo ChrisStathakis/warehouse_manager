@@ -1,0 +1,42 @@
+{% extends "dashboard.html" %} 
+
+{% block content %}
+    <div class='content'>
+
+        <div class='row'>
+            <div class='col-md-4'>
+                <div class='card'>
+                    <div class='card-header'>
+                        Αξιες
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>ΦΠΑ</th>
+                                    <th>Ποσο</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for ele in taxes_value %}
+                                    <tr>
+                                        <td>{{ ele.0 }}</td>
+                                        <td>{{ ele.1 }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th>Total</th>
+                                    <th>{{ total_value }}</th>
+                                </tr>
+                            </tfoot>
+                            
+                        </table>
+                    </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

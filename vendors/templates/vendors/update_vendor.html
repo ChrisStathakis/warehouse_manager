@@ -1,0 +1,477 @@
+{% extends 'dashboard.html' %}
+
+{% block content %}
+    <div class='content'>
+        <button type="button" class="btn btn-danger" data-toggle="modal" data-target=".bd-example-modal-lg">Warnings</button>
+                <button type="button" class="btn btn-sencodary" 
+                            data-toggle="modal" data-target="#paycheckModal">
+                                    ΔΗΜΙΟΥΡΓΙΑ ΕΠΙΤΑΓΗΣ
+                            </button>
+        {% if notes_exists %}
+            <!-- Large modal -->
+                
+                <div id="myWarningModal" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myWarningModal" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="row">
+                            <div class="col-12 center">
+                                <h4>Σημειωσεις</h4>
+                            </div>
+                            {% for warning in notes %}
+                                <div class="col-4">
+                                    <div class="card" style="width: 18rem;">
+                                        <div class="card-body">
+                                          <h5 class="card-title">{{ warning }}</h5>
+                                          <p class="card-text">{{ warning.text|safe }}</p>
+                                          <a href="{{ warning.get_absolute_url }}" class="btn btn-primary">Δες Το</a>
+                                         
+                                          <a href="{{ warning.update_status }}" class="btn btn-danger">Μη Σημαντικο </a>
+                                        </div>
+                                      </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+        <div class='row'>
+            <div class='col-md-6'>
+                <div class='card' style='height:600px;overflow: scroll;'>
+                    <div class='card-header'>
+                        <div class='title'>Στοιχεια</div>
+                        <br>
+                        <a href='{% url "vendors:list" %}' class='btn btn-warning'>Επιστροφη</a>
+                    </div>
+                    <div class='card-body'>
+                        <ul>
+                            <li>ΑΦΜ... {{ object.afm }} </li>
+                            <li>ΔΟΥ... {{ object.doy }} </li>
+                            <li>ΤΗΛΕΦΩΝΟ... {{ object.phone }} </li>
+                            <li>ΚΙΝΗΤΟ... {{ object.cellphone }}  </li>
+                            <li>EMAIL... {{ object.email }}</li>
+                            <li>ΙΔΙΟΚΤΗΤΗΣ... {{ object.owner }} </li>
+                        </ul>
+                        <div class="alert alert-danger" role="alert">ΥΠΟΛΟΙΠΟ --> {{ object.tag_balance }}</div>
+                        <button type="button" class="btn btn-primary btn-primary" data-toggle="modal" data-target="#edit_form">
+                        Επεξεργασια
+                        </button>
+                            <!-- Modal -->
+                            <div class="modal fade" id="edit_form" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">Επεξεργασια {{ object.title }}</h5>
+                                    
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <form method='post' class='form-control'> 
+                                        {% csrf_token %}
+                                        {{ form }}
+                                        <button type='submit' class='btn btn-success'>Αποθηκευση</button>
+                                    </form>
+                                    <br /><br /><br />
+                                    <a href='{{ object.get_delete_url }}' onclick='return confirm("Εισαι σιγουρος;")' class='btn btn-danger'>Διαγραφη</a>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                </div>
+                                </div>
+                            </div>
+                            </div>
+                            <br /> <br/>
+                            <a href='{% url "vendors:notes" object.id %}' class='btn btn-info'>Σημειωσεις</a>
+                            <a href='{% url "vendors:vendor_card" object.id %}' class='btn btn-info pull-right'>Καρτελα</a>
+                            
+                            <a href='{% url "vendors:create_costumer_from_vendor" object.id %}' class='btn btn-warning'>Δημιουργια Πελατη</a>
+                            <!-- Button trigger modal -->
+                            
+  
+
+                            <div class="modal fade" id="paycheckModal" tabindex="-1" role="dialog" 
+                            aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">ΕΠΙΤΑΓΗ</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form method='post' class='form' action='{% url "vendors:validate_paycheck_create" vendor.id %}'>
+                                            {% csrf_token %}
+                                            {{ paycheckForm}}
+                                            <button type='submit' class='btn btn-primary'><i class='fa fa-save'></i> ΑΠΟΘΗΚΕΥΣΗ
+                                        </form>
+                                    </div>
+                                    
+                                </div>
+                                </div>
+                            </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class='col-md-6'>
+                <div class='card'>
+                    <div class='card-header'>
+                        <div class='title'>Δημιουργία Τιμολογίου </div>
+                    </div>
+                    <div class='card-body'>
+                        <nav>
+                            <div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
+                                <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">Τιμολόγιο</a>
+                                <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false">Πληρωμή</a>
+                            </div>
+                        </nav>
+                        <div class="tab-content" id="nav-tabContent">
+                            <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+                            <h4 >Δημιουργία Τιμολογίου</h4>
+                                <form method='post' action="{% url 'vendors:validate_invoice_view' object.id %}">
+                                    {% csrf_token %}
+                                    {{ invoice_form }}
+                                    <button type='submit' class='btn btn-success'>Δημιουργία </button>
+                                </form>
+                            </div>
+                            <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+                                <h4 style='color:green;'>Δημιουργία Πληρωμής</h4>
+                                <form method='post' action="{% url 'vendors:validate_payment_view' object.id %}"> 
+                                    {% csrf_token %}
+                                    {{ payment_form }}
+                                    <button type='submit' class='btn btn-success'>Δημιουργία </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class='col-md-12'>
+                <div class='card' style='height:300px;overflow: scroll;'>
+                    <div class='card-header'>
+                        <div class='title'> Σημειωσεις </div>
+                    </div>
+                    <div class='card-body'>
+                        <table class='table'>
+                            <thead>
+                                <tr>
+                                    <td>date</td>
+                                    <td>Tile</td>
+                                    <td>text </td>
+                                    <td>#</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for ele in notes %}
+                                    <tr>
+                                        <td>{{ ele.date|date:"d/M/Y"}}</td>
+                                        <td>{{ ele.title}}</td>
+                                        <td>{{ ele.text|truncatechars_html:70|safe }}</td>
+                                        <td>
+                                        <a href="{{ ele.get_absolute_url }}" 
+                                            class='btn btn-small btn-primary
+                                            '><i class='fa fa-info'></i></a>
+                                     </td>
+                                    </tr>
+                                {%  endfor %}
+                            </tbody>
+                        </table>
+                        
+                    </div>
+                </div>
+            
+            </div>
+        </div>
+        {% comment %}
+
+        <div class='row'>
+            <div class='col-md-12'>
+                 <h2>Notes</h2>
+            </div>
+            <br>
+            {% for note in notes %}
+                <div class='col-md-4'>
+                    <div class='card'>
+                        <div class='card-header'>
+                            <h4>{{ note }}</h4>
+                            <p>{{ note.date }}
+                        </div>
+                        <div class='card-body'>
+                            <hr>
+                            {{ note.text|safe }}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        {% endcomment %}
+        <div class='row'>
+            <div class='col-md-12'>
+                <div class='card'>
+                    <div class='card-header'>
+                        <form class='form' method="get" action='#resultt'>
+                            <div class='form-group'>
+                                <label>Επιλέξτε Διαστημα </label>
+                            </div>
+                            <input
+                                    id="reportrange"
+                                    class="form-control"
+                                    style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%"
+                                    name="date_range"
+                                    value="{{ request.GET.date_range }}"
+                            />
+                            <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> Αποθηκευση </button>
+                            <a href="{{ request.path }}" class="btn btn-warning">Καθαρισμος</a>
+                            <a href="{% url 'vendors:print_vendor_view' object.id %}?date_range={{ request.GET.date_range }}" class="btn btn-success pull-right"><i class="fa fa-print">PRINT</i> </a>
+                        </form>
+                    </div>
+                    <div class='card-body'>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class='row' id='resultt'>
+            <div class='col-md-6'>
+                <div class='card'>
+                    <div class='card-header'>
+                        <h4>Τιμολογια Tζιρος: <span style='color:red'>{{ total_order_cost|floatformat:2 }}</span></h4> 
+                    </div>
+                    <div class='card-body' style='height:400px;overflow: scroll;'>
+                        <table class='table table-bordered'>
+                            <thead>
+                                <tr>
+                                    <th>Ημερομηνια</th>
+                                    <th>Τιτλος</th>
+                                    <th>ΦΠΑ</th>
+                                    <th>Ποσο</th>
+                                    <th>Επεξεργασια</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for invoice in invoices %}
+                                    <tr>
+                                        <td>{{ invoice.date }}</td>
+                                        <td>{{ invoice.title }}</td>
+                                        <td>6%: {{ invoice.taxes_6 }} | 13%: {{ invoice.taxes_13 }} <br> 24%: {{ invoice.taxes_24 }}</td>
+                                        <td>{{ invoice.tag_value }}</td>
+                                        <td><a data-href="{% url 'vendors:ajax_invoice_modal' invoice.id %}" class='btn btn-primary quick_view'><i class='fa fa-edit'></i></a></td>
+                                    </tr>
+
+                                {% empty %}
+                                    <tr>
+                                        <td colspan='5'>Δε υπάρχουν δεδομένα</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class='col-md-6'>
+                <div class='card'>
+                    <div class='card-header'>
+                        <h4>Πληρωμές <span style='color:green'> {{ total_payments|floatformat:2 }} </span></h4>
+                    </div>
+                    <div class='card-body' style='overflow-y: scroll;height:400px;'>
+                        <table class='table table-bordered'>
+                            <thead>
+                                <tr>
+                                    <th>Ημερομηνια</th>
+                                    <th>Τιτλος</th>
+                                    <th>Περιγραφη</th>
+                                    <th>Ποσο</th>
+                                    <th>Επεξεργασια</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for payment in payments %}
+                                    <tr>
+                                        <td>{{ payment.date }}</td>
+                                        <td>{{ payment.title }}</td>
+                                        <td>{{ payment.description }}</td>
+                                        <td>{{ payment.tag_value }}</td>
+                                        <td><button data-href="{% url 'vendors:ajax_payment_modal' payment.id %}" class='btn btn-primary quick_view'>
+                                        <i class='fa fa-edit'></i></button>
+                                        </td>
+                                    </tr>
+
+                                {% empty %}
+                                    <tr>
+                                        <td colspan='5'>Δε υπάρχουν δεδομένα</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class='col-md-6'>
+                <div class='card'>
+                    <div class='card-header'>
+                        <h4>ΕΠΙΤΑΓΕΣ</h4>
+                    </div>
+                    <div class='card-body' style='overflow-y: scroll;height:400px;'>
+                        <table class='table table-bordered'>
+                            <thead>
+                                <tr>
+                                    <th>Ημερομηνια</th>
+                                    <th>Τιτλος</th>
+                                    <th>Ποσο</th>
+                                    <th>Επεξεργασια</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for paycheck in paychecks %}
+                                    <tr>
+                                        <td>{{ paycheck.date }}</td>
+                                        <td>{{ paycheck.title }}</td>     
+                                        <td>{{ paycheck.value }}</td>
+                                        <td><a target='blank' href="{{ paycheck.get_edit_url }}" class='btn btn-primary'>
+                                        <i class='fa fa-edit'></i></a>
+                                        </td>
+                                    </tr>
+
+                                {% empty %}
+                                    <tr>
+                                        <td colspan='5'>Δε υπάρχουν δεδομένα</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class='col-md-6'>
+                <div class='card' style='height:300px;overflow: scroll;'>
+                    <div class='card-header'>
+                        <div class='title'>Τραπεζικοι Λογιαριασμοί </div>
+                    </div>
+                    <div class='card-body'>
+                        <table class='table'>
+                            <thead>
+                                <tr>
+                                    <td>Τραπεζα</td>
+                                    <td>Αριθμός</td>
+                                    <td>Δικαιούχος </td>
+                                    <td>#</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for bank in object.bankings.all %}
+                                    <tr>
+                                        <td>{{ bank.payment_method }}</td>
+                                        <td>{{ bank.code}}</td>
+                                        <td>{{ bank.name }}</td>
+                                        <td>
+                                        <button data-href="{{ bank.get_edit_url }}" 
+                                            class='btn btn-small btn-primary quick_view
+                                            '><i class='fa fa-info'></i></button>
+                                     </td>
+                                    </tr>
+                                {%  endfor %}
+                            </tbody>
+                        </table>
+                        
+                        <button data-href="{% url 'vendors:ajax_create_banking_account' object.id %}" 
+                            class='btn btn-small btn-success pull-right quick_view'>Προσθηκη
+                        </button>
+                            </div>
+                </div>
+
+                <div class='card' style='height:300px;overflow: scroll;'>
+                <div class='card-header'>
+                        <div class='title'>Συνεργατες</div>
+                    </div>
+                    <div class='card-body'>
+                        <table class='table'>
+                            <thead>
+                                <tr>
+                                    <th>Ονομα</th>
+                                    <th>Τηλεφωνο</th>
+                                    <th>Πληροφορίες</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for person in object.persons.all %}
+                                    <tr>
+                                        <td>{{ person.title }}</td>
+                                        <td>{{ person.phone }}</td>
+                                        <td>
+                                            <button data-href="{% url 'vendors:ajax_employer_modal' person.id %}" 
+                                                class='btn btn-small btn-primary pull-right quick_view'><i class='fa fa-info'></i>
+                                                </button>
+                                     </td>
+                                    </tr>
+                                {%  endfor %}
+                            </tbody>
+                        </table>
+                        
+                        <button type="button" class="btn btn-success pull-right" data-toggle="modal" data-target="#create_em">
+                        <i class='fa fa-plus'></i> Προσθηκη
+                        </button>
+                            <!-- Modal -->
+                            <div class="modal fade" id="create_em" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">Προσθηκη Αντιπροσωπου</h5>
+                                    
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <form method='post' class='form-control' action="{% url 'vendors:validate_employer_view' object.id %}" > 
+                                        {% csrf_token %}
+                                        {{ employer_form }}
+                                        <button type='submit' action="{% url 'vendors:validate_invoice_view' object.id %}" class='btn btn-success'>Αποθηκευση</button>
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                </div>
+                                </div>
+                            </div>
+                            </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class='row' id='modal_area'></div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+<script type="text/javascript">
+    $(window).on('load',function(){
+        $('#myWarningModal').modal('show');
+    });
+</script>
+
+<script>
+    $('.quick_view').click(function (evt) {
+        evt.preventDefault();
+        console.log('here')
+        $('#modal_area').empty();
+        const my_btn = $(this);
+        const url = my_btn.attr('data-href');
+        $.ajax({
+            method: 'GET',
+            dataType: 'json',
+            url: url,
+
+            success: function (data) {
+                $('#modal_area').html(data.result);
+                $('#quick_view_modal').modal('show');
+            }
+        })
+    })
+</script>
+
+{% endblock %}

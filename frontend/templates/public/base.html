@@ -1,0 +1,155 @@
+<!DOCTYPE html> {% load static %}
+<html lang="en">
+{% include 'include/css.html' %}
+{% block extra_css %} {% endblock %}
+
+<body class="">
+  <div class="wrapper ">
+    <div class="sidebar" data-color="white" data-active-color="danger">
+      <!--
+        Tip 1: You can change the color of the sidebar using: data-color="blue | green | orange | red | yellow"
+    -->
+      <div class="logo">
+        <a href="/" class="simple-text logo-mini">
+          <div class="logo-image-small">
+            <img src="{% static 'assets/img/logo.png' %}">
+          </div>
+        </a>
+        <a href="{% url 'public_products' %}" class="simple-text logo-normal">
+         Αποθηκη
+          <!-- <div class="logo-image-big">
+            <img src="../assets/img/logo-big.png">
+          </div> -->
+        </a>
+      </div>
+      <div class="sidebar-wrapper">
+        <ul class="nav">
+            {% for ele in categories %}
+                  <li>
+                    <a href="{% url 'public_category' ele.id %}">
+                      <i class="nc-icon nc-user-run"></i>
+                      <p>{{ ele }}</p>
+                    </a>
+                  </li>
+            {% endfor %}
+
+          <hr>
+
+
+        </ul>
+      </div>
+    </div>
+    <div class="main-panel">
+      <!-- Navbar -->
+      <nav class="navbar navbar-expand-lg navbar-absolute fixed-top navbar-transparent">
+        <div class="container-fluid">
+          <div class="navbar-wrapper">
+            <div class="navbar-toggle">
+              <button type="button" class="navbar-toggler">
+                <span class="navbar-toggler-bar bar1"></span>
+                <span class="navbar-toggler-bar bar2"></span>
+                <span class="navbar-toggler-bar bar3"></span>
+              </button>
+            </div>
+            <a class="navbar-brand" href="{{ request.path }}">{{ page_title }}</a>
+          </div>
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navigation" aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-bar navbar-kebab"></span>
+            <span class="navbar-toggler-bar navbar-kebab"></span>
+            <span class="navbar-toggler-bar navbar-kebab"></span>
+          </button>
+          <div class="collapse navbar-collapse justify-content-end" id="navigation">
+            <form {% if action_url %} action="{{ action_url }}"  {% endif %}>
+                <div class="input-group no-border">
+                    <input name="q" type="text" value="{{ request.GET.q }}" class="form-control" placeholder="Αναζήτηση..."
+
+                    >
+                    <div class="input-group-append">
+                        <button type="submit" class="input-group-text"><i class="nc-icon nc-zoom-split"></i></button>
+                    </div>
+                </div>
+
+
+
+            </form>
+              <ul style="" class="navbar-nav">
+
+          </div>
+        </div>
+      </nav>
+      <!-- End Navbar -->
+      <!-- <div class="panel-header panel-header-lg">
+
+  <canvas id="bigDashboardChart"></canvas>
+        </div> -->
+       {% block content %}
+
+       {% endblock %}
+
+        {% if messages  %}
+           <div class="modal" tabindex="-1" role="dialog" id="messageModal">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title">Μηνυμα</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    <ul class="message">
+                        {% for message in messages %}
+                            <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>
+                                {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}Important: {% endif %}
+                                 {{ message }}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+        {% endif %}
+            <footer class="footer footer-black  footer-white ">
+                <div class="container-fluid">
+          <div class="row">
+            <nav class="footer-nav">
+              <ul>
+                <li>
+                  <a href="https://www.creative-tim.com" target="_blank">Creative Tim</a>
+                </li>
+                <li>
+                  <a href="http://blog.creative-tim.com/" target="_blank">Blog</a>
+                </li>
+                <li>
+                  <a href="https://www.creative-tim.com/license" target="_blank">Licenses</a>
+                </li>
+              </ul>
+            </nav>
+            <div class="credits ml-auto">
+              <span class="copyright">
+                ©
+                <script>
+                  document.write(new Date().getFullYear())
+                </script>, made with <i class="fa fa-heart heart"></i> by Creative Tim
+              </span>
+            </div>
+          </div>
+        </div>
+      </footer>
+        </div>
+
+    </div>
+  {% include 'include/js.html' %}
+  {% block extra_js %}
+        <script>
+
+        </script>
+  {% endblock %}
+</body>
+
+</html>
