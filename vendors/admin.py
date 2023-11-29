@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Vendor, Employer, Invoice, Payment, Paycheck, VendorBankingAccount, Note
+from .models import Vendor, Employer, Invoice, Payment, Paycheck, VendorBankingAccount, Note, InvoiceItem
 from import_export.admin import ImportExportModelAdmin
 from products.models import ProductVendor
 from products.forms import ProductForm
@@ -9,11 +9,16 @@ def update_vendor_taxes(modeladmin, request, queryset):
     queryset.update(taxes_modifier='c')
 
 
+
 class VendorProductInline(admin.TabularInline):
     model = ProductVendor
     form = ProductForm
     fields = ['product', 'vendor', 'sku', 'value', 'discount', 'final_value']
 
+
+@admin.register(InvoiceItem)
+class InvoiceItemAdmin(admin.ModelAdmin):
+    pass
     
 @admin.register(Vendor)
 class VendorAdmin(ImportExportModelAdmin):

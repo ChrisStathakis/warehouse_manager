@@ -13,12 +13,11 @@
                     
                             <div class="row">
                                 <div class='col-4'>
-                                    <table class="table table-bordered">
-                                        
+                                    <table class="table table-bordered">                      
                                         <tbody>
                                             <tr>
                                                 <th>Πελατης</th>
-                                                <td>{{ object.costumer }} - {% if instance.locked %} locked {% else %} not {% endif %}</td>
+                                                <td>{{ object.costumer }} - {% if instance.locked %} locked {% else %}  {% endif %}</td>
                                             </tr>
                                             <tr>
                                                 <th>ΑΦΜ</th>
@@ -91,7 +90,7 @@
 
         <div class="row">
             
-            <div class="col-4">
+            <div class="col-12">
                 <div class="card mt-3 tab-card">
                     {% if object.locked %}
                         <div class="alert alert-danger" role="alert">
@@ -157,17 +156,21 @@
                                 <thead>
                                 <tr>
                                     <th>Προϊον</th>
+                                    <th class="table-warning">Υπόλοιπο</th>
                                     <th>Τιμή</th>
-                                    <th>-</th>
+                                    <th>Μεση Τιμή</th>
+                                    <th>Τιμή Πώλησης</th>
                                     <th>-</th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                     {% for product in products %}
                                         <tr>
-                                            <td>{{ product }}</td>
-                                            <td>{{ product.final_value }}</td>
-                                            <td></td>
+                                            <td><a href="{{ product.get_edit_url }}" target="_blank" >{{ product }}</a></td>
+                                            <td class="table-warning">{{ product.qty }}</td>
+                                            <td>{{ product.price_buy }}</td>
+                                            <td>{{ product.average_price }}</td>
+                                            <td>{{ product.value }}</td>
                                             <td><a name='q' href="{% url 'costumers:add_product_to_invoice'  object.id product.id %}" class="btn btn-primary"><i class="fa fa-plus"></i> </a> </td>
                                         </tr>
 
@@ -175,7 +178,7 @@
                                 </tbody>
                             </table>
                         </div>
-                        <div class="tab-pane fadep-3" id="one" role="tabpanel" aria-labelledby="one-tab">
+                        <div class="tab-pane fadep-3 p-3" id="one" role="tabpanel" aria-labelledby="one-tab">
                             <h5 class="card-title">Επεξεργασια Πελατη</h5>
                             <form method="post" class="form" action="{% url 'costumers:update_invoice_profile' object.profile.id %}">
                                 {% csrf_token %}

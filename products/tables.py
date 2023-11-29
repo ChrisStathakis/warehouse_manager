@@ -21,19 +21,17 @@ class ProductVendorTable(tables.Table):
     )
     tag_value = tables.Column(orderable=False, verbose_name='Καθαρη Αξια')
     tag_final_value = tables.Column(orderable=False, verbose_name='Αξια')
-    tag_clean_value = tables.Column(orderable=False, verbose_name='Αξια μετα την Εκπτωση')
-    tag_discount = tables.Column(orderable=False, verbose_name='Εκπτωση')
-    vendor = tables.TemplateColumn("<p> {{ record.vendor|truncatechars:'20' }}</p>")
 
+    vendor = tables.TemplateColumn("<p> {{ record.vendor|truncatechars:'20' }}</p>")
 
     class Meta:
         model = ProductVendor
         template_name = 'django_tables2/bootstrap.html'
-        fields = ['id','product', 'sku', 'vendor', 'tag_value', 'tag_discount', 'tag_clean_value', 'tag_final_value', 'action']
+        fields = ['id', 'product', 'sku', 'vendor', 'tag_clean_value', 'tag_final_value', 'action']
 
 
 class ProductTable(tables.Table):
-    
+    """
     mycheck_box = tables.TemplateColumn('''
     <div class="form-check">
         <label class="form-check-label">
@@ -44,6 +42,8 @@ class ProductTable(tables.Table):
          </label>
     </div>
     ''', orderable=False, verbose_name='Επιλογη')
+    """
+
     action = tables.TemplateColumn(
         '''<div class="btn-group dropright">
               <a href="{{ record.get_edit_url }}" class="btn btn-primary ">
@@ -59,13 +59,14 @@ class ProductTable(tables.Table):
             </div>''',
         orderable=False, verbose_name='Επεξεργασία'
     )
-    tag_final_value = tables.Column(verbose_name='Αξια Πωλησης', orderable=False)
-    tag_price_buy = tables.Column(verbose_name='Αξια Αγορας', orderable=False)
-
+    tag_final_value = tables.Column(orderable=False, verbose_name='Τιμή Πώλησης')
+    tag_price_buy = tables.Column(orderable=False, verbose_name='Τιμή Αγοράς')
+    tag_average_price = tables.Column(orderable=False, verbose_name='Μεση Τιμή Αγοράς')
+    qty = tables.TemplateColumn("<p style='background-color:{{ record.tag_color_qty}}'>{{ record.qty }} </p>", orderable=False)
     class Meta:
         model = Product
         template_name = 'django_tables2/bootstrap.html'
-        fields = ['mycheck_box', 'id', 'sku', 'title', 'qty', 'tag_price_buy', 'tag_final_value']
+        fields = ['id', 'sku', 'title', 'qty', 'tag_final_value', 'tag_price_buy', 'tag_average_price']
 
 
 class ProductTableForCategory(tables.Table):

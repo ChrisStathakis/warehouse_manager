@@ -2,17 +2,19 @@ from django.urls import path
 from .views import (HomepageView, VendorListView, CreateVendorView, UpdateVendorView, delete_vendor_view,
                     VendorNotesView, delete_note_view, NoteUpdateView, VendorCardView, change_note_status_view,
                     create_costumer_from_vendor_view, PaycheckUpdateView, PaycheckListView, 
-                    paycheck_delete_view, paycheck_create_view, print_vendor_view
+                    paycheck_delete_view, paycheck_create_view, print_vendor_view, invoices_vendor_list_view,
+                    CreateInvoiceView, InvoiceDetailView, InvoiceListView
                     )
 
-from .action_views import (validate_invoice_form_view, validate_employer_view,
+from .action_views import (validate_invoice_form_view, validate_employer_view, validate_order_item_update_view,
                            validate_payment_form_view, validate_invoice_edit_form_view, delete_invoice_view, 
                            delete_payment_view, validate_payment_edit_form_view, validate_employer_edit_view,
-                           delete_employer_view, validate_create_banking_account_view,
+                           delete_employer_view, validate_create_banking_account_view, delete_invoice_item_view,
                            validate_edit_banking_account_view, delete_banking_account_view, validate_note_creation_view,
                            validate_product_creation_view, validate_product_edit_view, validate_product_vendor_edit_view,
                            copy_product_to_new_vendor, copy_product_from_vendor_card_view, action_favorite_view,
-                           action_form_copy_vendor_product_view, validate_paycheck_form_view
+                           action_form_copy_vendor_product_view, validate_paycheck_form_view, validate_create_invoice_order_item_view,
+                           create_product_from_invoice
 
                            
                )
@@ -20,7 +22,8 @@ from .ajax_views import (ajax_invoice_modal_view, ajax_invoice_modal_view,
                          ajax_employer_edit_modal_view, ajax_banking_account_create_modal_view, ajax_banking_account_edit_modal_view, 
                          ajax_payment_edit_modal_view, ajax_show_product_prices, ajax_calculate_vendors_balance_view, ajax_search_warehouse_view,
                          ajax_edit_product_modal, ajax_product_modal_quick_view, ajax_show_product_analysis_view,
-                         ajax_search_products, ajax_add_product_to_category_view, ajax_edit_product_submit_view, create_product_from_category_view
+                         ajax_search_products, ajax_add_product_to_category_view, ajax_edit_product_submit_view, create_product_from_category_view,
+                         ajax_search_products_warehouse_view, ajax_modify_order_item_modal, ajax_create_product_modal
                          )
 
 from .categories_views import (CategoryListView, CategoryUpdateView, category_delete_view, CategoryCreateView,
@@ -35,6 +38,18 @@ urlpatterns = [
     path('create/', CreateVendorView.as_view(), name='create'),
     path('update/<int:pk>/', UpdateVendorView.as_view(), name='update'),
     path('delelte/vendor/<int:pk>/', delete_vendor_view, name='delete'),
+
+    # invoices
+    path("invoices/list/", InvoiceListView.as_view(), name="invoice_list"),
+    path("invoices/vendor/<int:pk>/", invoices_vendor_list_view, name="invoices_vendor"),
+    path("invoices/create/<int:pk>/", CreateInvoiceView.as_view(), name="invoice_vendor_create"),
+    path('invoice-detail/<int:pk>/', InvoiceDetailView.as_view(), name='invoice_update'),
+    path('invoice-delete-<int:pk>/', delete_invoice_view, name='invoice_delete'),
+    path('validate-order-item-creation/<int:pk>/', validate_order_item_update_view, name='validate_order_item_update'),
+    path('delete-invoice-item/<int:pk>/', delete_invoice_item_view, name='delete_invoice_item'),
+
+    path('validate-order-item_creation/<int:pk>/', validate_create_invoice_order_item_view, name='validate_order_item_creation'),
+
     path('create-costumer-from-vendor/<int:pk>/', create_costumer_from_vendor_view, name='create_costumer_from_vendor'),
     path('kartela/<int:pk>/', VendorCardView.as_view(), name='vendor_card'),
     path('ajax/kartela/product/<int:pk>/', ajax_show_product_prices, name='ajax_product_price'),
@@ -98,7 +113,7 @@ urlpatterns = [
     path('print/category/<int:pk>/', print_category_products_view, name="print_category"),
 
 
-# actions
+    # actions
 
     path("ajax/manipulate-product-category/<int:pk>/<int:dk>/<str:action>/", ajax_add_product_to_category_view,
          name="ajax_manipulate_product_category"),
@@ -106,6 +121,14 @@ urlpatterns = [
     path("ajax/search-products/<int:pk>/", ajax_search_products, name="products_ajax_search"),
     path("submit/create-products-from-category/<int:pk>/", create_product_from_category_view,
          name="create_product_from_category_view"),
+
+    path('action-create-product-from-invoice/<int:pk>/', create_product_from_invoice, name='create_product_from_invoice'),     
+
+    # ajax
+    path('ajax-create-product-from-invoice/<int:pk>/<int:dk>/', ajax_create_product_modal, name='ajax_create_product'),
+    path('ajax-modify-order-item-modal/<int:pk>/', ajax_modify_order_item_modal, name='ajax_modify_order_item'),
+    path('ware-search-products/<int:pk>/', ajax_search_products_warehouse_view, name='search_products_ware'),
+
 
 
     ]

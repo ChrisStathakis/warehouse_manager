@@ -41,8 +41,8 @@ class ProductFrontEndForm(BaseForm, forms.ModelForm):
 
     class Meta:
         model = Product
-        fields = ['active', 'title', 'sku', 'categories',
-                  'qty', 'value', 'value_per_unit', 'value_discount'
+        fields = ['active', 'title', "unit",'sku', 'categories',
+                  'value', 'safe_qty', 'taxes_modifier'
                 ]
         
 
@@ -50,8 +50,7 @@ class ProductFrontEndAjaxForm(BaseForm, forms.ModelForm):
 
     class Meta:
         model = Product
-        fields = ['active', 'title', 'value', 'value_per_unit', 'value_discount'
-                ]
+        fields = ['active', 'title', 'value',]
         
     def __init__(self, *args, **kwargs):
         super(ProductFrontEndAjaxForm, self).__init__(*args, **kwargs)
@@ -76,7 +75,7 @@ class CategoryForm(BaseForm, forms.ModelForm):
 
     class Meta:
         model = Category
-        fields = ['active', 'name', 'parent']
+        fields = ['name']
 
 
 class ActionVendorForm(BaseForm):

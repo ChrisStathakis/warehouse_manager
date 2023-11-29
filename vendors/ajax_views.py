@@ -1,15 +1,20 @@
 from django.contrib.admin.views.decorators import staff_member_required
 from django.db.models import Sum
+from django.views.decorators.csrf import csrf_exempt
 from django.template.loader import render_to_string
 from django.http import JsonResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, reverse
 from django.utils import timezone
 
-from .models import Invoice, Payment, Vendor, Employer, VendorBankingAccount, Note
+from .forms import InvoiceForm, InvoiceItemForm
+from .models import Invoice, Payment, Vendor, Employer, VendorBankingAccount, Note, InvoiceItem
 from products.models import Product, ProductVendor, Category
 from products.forms import ProductClassForm, ProductFrontEndForm
 
-from .forms import InvoiceForm, EmployerForm, VendorBankingAccountForm, PaymentForm, NoteForm, VendorProductForm, ProductVendorClassForm
+from .forms import (InvoiceForm, EmployerForm, VendorBankingAccountForm,
+                    PaymentForm, NoteForm, VendorProductForm, ProductVendorClassForm,
+                    Invoice, InvoiceForm
+                    )
 from .tables import ProductVendorTable
 
 
@@ -98,14 +103,14 @@ def ajax_banking_account_edit_modal_view(request, pk):
 
 @staff_member_required
 def ajax_show_product_prices(request, pk):
-    instance = get_object_or_404(ProductVendor, id=pk)
-    product = instance.product
+    instance = get_object_or_404(Product, id=pk)
+    order_items = instance.invoice_vendor_items.all()[:10]
     data = dict()
     data['result'] = render_to_string(request=request,
                                       template_name='vendors/ajax_views/modal_product_price.html',
                                       context={
-                                          'product': product,
-                                          'instance': instance,
+                                          'product': instance,
+                                          'order_items': order_items,
                                       }
                                       )
     return JsonResponse(data)
@@ -247,3 +252,68 @@ def create_product_from_category_view(request, pk):
         instance.categories.add(category)
         instance.save()
     return HttpResponseRedirect(category.get_card_url())
+
+
+
+@staff_member_required
+def ajax_search_products_warehouse_view(request, pk):
+    instance = get_object_or_404(Invoice, id=pk)
+    products = Product.filters_data(request, Product.objects.all())
+    data = dict()
+    data['result'] = render_to_string(template_name='warehouse/ajax/ware_product_container.html',
+                                      request=request,
+                                      context={
+                                          'products': products,
+                                          'object': instance,
+                                      }
+                                    )
+    return JsonResponse(data)
+
+
+
+@staff_member_required
+@csrf_exempt
+def ajax_modify_order_item_modal(request, pk):
+    instance = get_object_or_404(InvoiceItem, id=pk)
+    form = InvoiceItemForm(instance=instance)
+    data = dict()
+    data['result'] = render_to_string(template_name='warehouse/ajax/product_modal.html',
+                                      request=request,
+                                      context={
+                                          'form': form,
+                                          'title': f'Επεξεργασια {instance.product}',
+                                          'action_url': reverse('vendors:validate_order_item_update', kwargs={'pk': instance.id}),
+                                          'delete_url': instance.get_delete_url()
+
+                                      }
+                                      )
+    return JsonResponse(data)
+
+
+@staff_member_required
+@staff_member_required
+def ajax_create_product_modal(request, pk, dk):
+    invoice = get_object_or_404(Invoice, id=pk)
+    product = get_object_or_404(Product, id=dk)
+    data = dict()
+    action_url = reverse("vendors:validate_order_item_creation", kwargs={'pk': invoice.id})
+    form = InvoiceItemForm(initial={
+                                    'vendor': invoice.vendor,
+                                    'invoice': invoice,
+                                    'product': product,
+                                    'taxes_modifier': product.taxes_modifier,
+                                    'value': product.price_buy,
+
+                                    }
+                           )
+    data['result'] = render_to_string(request=request,
+                                      template_name='warehouse/ajax/product_modal.html',
+                                      context={
+                                          'form': form,
+                                          'product': product,
+                                          'action_url': action_url,
+                                          'invoice': invoice,
+                                          'title': product
+                                          }
+                                    )
+    return JsonResponse(data)

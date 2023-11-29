@@ -10,7 +10,8 @@ from django_tables2.tables import RequestConfig
 
 from .models import Product, Category, ProductVendor, TAXES_CHOICES, PriceList
 from .forms import ProductFrontEndForm, ProductVendorFrontEndform, PriceListForm
-from vendors.models import Vendor
+from vendors.models import Vendor, InvoiceItem
+from costumers.models import InvoiceItem as SellInvoiceItem
 from .tables import CategoryTable, ProductTable, PriceTable
 from frontend.tools import build_url
 
@@ -60,14 +61,14 @@ class ProductListView(ListView):
     total_products = 0
 
     def get_queryset(self):
+        # need fixing
         products = Product.objects.all()
         qs = Product.filters_data(self.request, products)
-        
         vendors = Vendor.filters_data(self.request, Vendor.objects.all())
-        products_vendor = ProductVendor.objects.filter(vendor__in=vendors)
-        qs_values = products_vendor.values_list('product__id')
-
-        qs = qs.filter(id__in=qs_values) if qs_values else qs
+        vendor_qs = vendors.values_list('id')
+        items = InvoiceItem.objects.filter(vendor__id__in=vendor_qs)
+        items_ids = items.values_list("product__id")
+        qs = qs.filter(id__in=items_ids) if items_ids else qs
         return qs
 
     def get_context_data(self, **kwargs):
@@ -85,9 +86,7 @@ class ProductEditListView(ListView):
     paginate_by = 50
 
     def get_queryset(self):
-        qs = Product.objects.all()
-        self.initial_data = qs
-        qs = Product.filters_data(self.request, qs)
+        qs = Product.filters_data(self.request, Product.objects.all())
         return qs
 
     def get_context_data(self, **kwargs):
@@ -98,15 +97,8 @@ class ProductEditListView(ListView):
         context['queryset_table'] = queryset_table
         context['back_url'] = reverse('vendors:home')
         context['create_url'] = reverse('edit_product_create')
-        vendors_ids = self.initial_data.values_list('vendors')
-        vendors = Vendor.objects.filter(id__in=vendors_ids)
-        categories_ids = self.initial_data.values_list('categories')
-        categories = Category.objects.filter(id__in=categories_ids)
-        context['vendors'] = vendors
-        context['categories'] = categories
-        context['price_list'] = PriceList.objects.all()
-        context['search_filter'], context['category_filter'], context['vendor_filter'], context['check_vendor_filter'],\
-            context["price_filter"] = [True]*5
+        context['categories'] = Category.objects.all()
+        context['search_filter'], context['category_filter'], context['check_vendor_filter'] = [True]*3
         return context
 
 
@@ -144,6 +136,13 @@ class ProductUpdateView(UpdateView):
         context["page_title"] = f'{self.object}'
         context['product_vendor_form'] = ProductVendorFrontEndform(initial={'product': self.object})
         context['action_url'] = reverse('edit_product_list')
+        invoice_qs = self.object.invoice_vendor_items.all()
+        sell_qs = self.object.sell_items.all()
+        invoice_qs = InvoiceItem.filters_data(request=self.request, qs=invoice_qs)
+        sell_qs = SellInvoiceItem.filters_data(self.request, sell_qs)
+        context['vendor_invoices'] = invoice_qs
+        context['sell_invoices'] = sell_qs
+        context['date_filter'] = True
         return context
 
 

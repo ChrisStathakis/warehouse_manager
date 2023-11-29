@@ -1,0 +1,198 @@
+{% extends "dashboard.html" %}
+
+
+{% block content %}
+    <div class="content">
+        <div class="row">
+            <div class="col-5">
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Επιλογη Προϊοντος</h4>
+                        <form method="get" class="form">
+                            <input name="q" type="text" class="form-control search_button" data-href="{% url 'vendors:search_products_ware' object.id %}">
+                        </form>
+                    </div>
+                    <div class="card-body" id="product_container">
+                       {% include 'warehouse/ajax/ware_product_container.html' %}
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Δημιουργια Προϊοντος</h4>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" class="form" action="{% url 'vendors:create_product_from_invoice' object.id %}">
+                            {% csrf_token %}
+                            {{ product_form }}
+                            <button type="submit" class="btn btn-success"> <i class="fa fa-save"></i> Αποθηκευση </button>
+                        </form>
+                    </div>
+                    <div class="modal_area"></div>
+                </div>
+            </div>
+            <div class='col-7'>
+                <div class='card'>
+                    <div class='card-header'>
+                        <h4>Λεπτομεριες Τιμολογιου </h4>
+                    </div>
+                    <div class='card-body'>
+                        <table class='table table-bordered'>
+                            <thead>
+                                <tr>
+                                    <th>Κωδ. Τιμο</th>
+                                    <th>Προϊον</th>
+                                    <th>Ποσοτητα</th>
+                                    <th>Αξία</th>
+                                    <th>Τελικη Αξια</th>
+                                    <th>Κατηγορια Φπα</th>
+
+                                    <th>--</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in order_items %}
+                                    <tr>
+                                        <td {% if item.locked %} class="table-warning" {% endif %}>{{ item.order_code }}</td>
+                                        <td>{{ item.product }}</td>
+                                        <td>{{ item.qty }} {{ item.get_unit_display}}</td>
+                                        <td>{{ item.value }}</td>
+                                        <td>{{ item.total_clean_value }}</td>
+                                        <td>{{ item.get_taxes_modifier_display }} </td>
+                                        <td><button data-href="{% url 'vendors:ajax_modify_order_item' item.id %}" type='button' class='btn btn-warning edit_button'><i class='fa fa-edit'></i> </button></td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Συνολικα Στοιχεια</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-6">
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item">
+                                        Ημερομηνια... {{ invoice.date|date:"d-m-Y" }} <br>
+                                        {% if invoice.show_invoice_date %} Ημερομηνια Τιμολογίου... {{ invoice.date_invoice|date:'d-m-Y' }} {% endif %}
+                                    </li>
+                                    <li class="list-group-item">Κωδικος Τιμ.. {{ invoice.title }}</li>
+                                    <li class="list-group-item">Αξια Προϊόντων... {{ invoice.value }}</li>
+                                    <li class="list-group-item">Αξια Προϊόντων + ΦΠΑ  {{ invoice.final_value }}</li>
+                                    <li class="list-group-item">Τροπος Πληρωμής... {{ invoice.payment_method }}</li>
+                                </ul>
+                            </div>
+                            <div class="col-6">
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item">Προμηθευτης... {{ invoice.vendor }}</li>
+                                    <li class="list-group-item">Αξια... {{ invoice.tag_final_value }}</li>
+                                    <li class="list-group-item">Σημειωσεις.. {{ invoice.description }}</li>
+                                </ul>
+                                <a href="{% url 'vendors:invoices_vendor' invoice.vendor.id %}" class="btn btn-warning"> ΕΠΙΣΤΡΟΦΗ </a>
+                             </div>
+                            <div class="col-12">
+                                <hr>
+                                <!-- Button trigger modal -->
+                                <button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#exampleModal">
+                                  <i class="fa fa-edit"></i> Επεξεργασια
+                                </button>
+
+                                <!-- Modal -->
+                                <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                  <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                      <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabel">Επεξεργασια</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                          <span aria-hidden="true">&times;</span>
+                                        </button>
+                                      </div>
+                                      <div class="modal-body">
+                                        <form method="post" class="form">
+                                            {% csrf_token %}
+                                            {{ form }}
+                                            <button type="submit" class="btn btn-success"><i class="fa fa-save"></i> Αποθηκευση </button>
+                                        </form>
+                                      </div>
+                                      <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                                <a href="{% url 'vendors:invoice_delete' invoice.id %}" onclick="return confirm('ΕΙΣΑΙ ΣΙΓΟΥΡΟΣ;')" class="card-link btn btn-success btn-danger pull-left"><i class="fa fa-remove" ></i> Διαγραφη</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block extra_js %}
+
+    <script>
+        $('.search_button').change(function (evt) {
+            evt.preventDefault();
+            const myInput = $(this);
+            const url = myInput.attr('data-href');
+            const value = myInput.val();
+            $.ajax({
+                dataType: 'json',
+                url: url + '?q='+ value,
+                method: 'GET',
+
+                success: function (data) {
+                    $('#product_container').html(data.result)
+                }
+            })
+        })
+    </script>
+
+    <script>
+        $('.add_button').click(function(evt){
+            evt.preventDefault();
+            $('.modal_area').empty();
+            const myBtn = $(this);
+            const url = myBtn.attr('data-href');
+            $.ajax({
+                method: 'GET',
+                dataType: 'json',
+                url: url,
+
+                success: function(data){
+                    $('.modal_area').html(data.result);
+                    $('#quick_view_modal').modal('show');
+                }
+            })
+        })
+    </script>
+
+    <script>
+        $('.edit_button').click(function (evt) {
+            evt.preventDefault();
+            $('.modal_area').empty();
+            const myBtn = $(this);
+            const url = myBtn.attr('data-href');
+            $.ajax({
+                method: 'POST',
+                dataType: 'json',
+                url: url,
+
+                success: function (data) {
+                    $('.modal_area').html(data.result);
+                    $('#quick_view_modal').modal('show')
+                }
+            })
+        })
+    </script>
+
+
+{% endblock %}

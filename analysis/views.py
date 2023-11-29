@@ -16,7 +16,8 @@ from itertools import chain
 from incomes.models import Income
 from products.models import Product, ProductVendor
 from payroll.models import Bill, Payroll
-from vendors.models import Payment, Invoice, Vendor
+from vendors.models import Payment, Invoice, Vendor, InvoiceItem
+from costumers.models import InvoiceItem as SellItem
 from general_expenses.models import GeneralExpense
 from .tools import sort_months
 from .models import TaxesModifier
@@ -25,6 +26,19 @@ from .models import TaxesModifier
 @method_decorator(staff_member_required, name='dispatch')
 class AnalysisHomepage(TemplateView):
     template_name = 'analysis/homepage.html'
+
+
+@staff_member_required
+def product_analysis_view(request):
+    date_filter = True
+    invoice_items = InvoiceItem.filters_data(request, InvoiceItem.objects.all())
+    sell_items = SellItem.filters_data(request, SellItem.objects.all())
+
+    invoice_product_buy = invoice_items.values("product__title").annotate(Sum("qty"))
+    invoice_product_sell = sell_items.values("product__title").annotate(Sum("qty"))
+    context = locals()
+    return render(request, 'analysis/analysis_products.html', context)
+
 
 
 @method_decorator(staff_member_required, name='dispatch')
@@ -363,3 +377,6 @@ class StoreInventoryView(TemplateView):
             'taxes_modifier')
         context.update(locals())
         return context
+    
+
+

@@ -1,11 +1,11 @@
 from django.urls import path
 
-from .views import AnalysisHomepage, AnalysisIncomeView, AnalysisOutcomeView, CashRowView, BalanceSheetView, StoreInventoryView
-
+from .views import AnalysisHomepage, AnalysisIncomeView, AnalysisOutcomeView, CashRowView, BalanceSheetView, StoreInventoryView, product_analysis_view
 app_name='analysis'
 
 urlpatterns = [
     path('homepage/', AnalysisHomepage.as_view(), name='homepage'),
+    path('products/', product_analysis_view, name="product_analysis"),
     path('incomes/', AnalysisIncomeView.as_view(), name='income_analysis'),
     path('outcomes/', AnalysisOutcomeView.as_view(), name='outcome_analysis'),
     path('cash-row/', CashRowView.as_view(), name='cash_row'),

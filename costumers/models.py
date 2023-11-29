@@ -9,21 +9,16 @@ from django.shortcuts import get_object_or_404
 
 from tinymce.models import HTMLField
 
-from frontend.models import PaymentMethod
+from frontend.my_constants import UNITS, TAXES_CHOICES
+from frontend.tools import initial_date
 from products.models import Product
+from frontend.models import PaymentMethod
+
 
 from decimal import Decimal
 CURRENCY = settings.CURRENCY
 
-TAXES_CHOICES = (
-    ('1', '24'),
-    ('2', '13'),
-    ('3', '6'),
-    ('4', '17'),
-    ('5', '9'),
-    ('6', '4'),
-    ('7', '0'),
-)
+
 
 PAYMENT_METHODS = (
     ('1', 'Λογαριασμός Πληρωμών Ημεδαπής'),
@@ -64,6 +59,7 @@ class MyCard(models.Model):
 class Costumer(models.Model):
     eponimia = models.CharField(null=True, max_length=240, verbose_name='Επωνυμια')
     address = models.CharField(blank=True, null=True, max_length=240, verbose_name='Διευθυνση')
+    city = models.CharField(blank=True, null=True, max_length=220, verbose_name='πολη')
     job_description = models.CharField(blank=True, null=True, max_length=240, verbose_name='Επαγγελμα')
     loading_place = models.CharField(blank=True, null=True, max_length=240, default='Εδρα μας',
                                      verbose_name='Τόπος Φόρτωσης')
@@ -71,7 +67,7 @@ class Costumer(models.Model):
                                    verbose_name='Προορισμος')
     afm = models.CharField(blank=True, null=True, max_length=10, verbose_name='ΑΦΜ')
     doy = models.CharField(blank=True, null=True, max_length=240, default='Σπαρτη', verbose_name='ΔΟΥ')
-    destination_city = models.CharField(blank=True, null=True, max_length=240 , verbose_name='Πολη')
+    destination_city = models.CharField(blank=True, null=True, max_length=240 , verbose_name='ΤΟΠΟΣ ΠΡΟΟΡΙΣΜΟΥ')
     transport = models.CharField(blank=True, null=True, max_length=10, verbose_name='Μεταφορικό Μέσο')
 
     first_name = models.CharField(max_length=200, verbose_name='Ονομα', blank=True)
@@ -119,6 +115,9 @@ class Costumer(models.Model):
 
     def tag_value(self):
         return f'{self.value} {CURRENCY}'
+    
+    def tag_transport(self):
+        return self.transport if self.transport else ""
 
     def tag_paid_value(self):
         return f'{self.paid_value} {CURRENCY}'
@@ -173,8 +172,6 @@ class PaymentInvoice(models.Model):
     SERIES = (
         ('a', 'A'),
         ('b', 'Δοκιμαστικο'),
-
-
     )
     TYPE_ = (
         ('1.1', 'Τιμολόγιο - Δελτίο Αποστολής'),
@@ -206,9 +203,14 @@ class PaymentInvoice(models.Model):
                                  related_name='payment_invoices'
                                  )
     number = models.IntegerField(blank=True, null=True)
-    series = models.CharField(max_length=1, choices=SERIES, verbose_name='Σειρά')
-    place = models.CharField(max_length=220, blank=True)
-    date = models.DateTimeField(verbose_name='Ημερομηνία', default=timezone.now())
+    series = models.CharField(max_length=1, choices=SERIES, verbose_name='ΣΕΙΡΑ')
+    place = models.CharField(max_length=220, blank=True, verbose_name='ΤΟΠΟΣ ΕΚΔΟΣΗΣ')
+    date = models.DateTimeField(verbose_name='ΗΜΕΡΟΜΗΝΙΑ', default=timezone.now())
+    delivery_time = models.CharField(blank=True, null=True, max_length=220, verbose_name="ΩΡΑ ΠΑΡΑΔΟΣΗΣ")
+   
+    total_qty = models.DecimalField(max_digits=20, decimal_places=2, default=0)
+    writing_qty = models.TextField(blank=True, null=True, verbose_name="ΠΟΣΟΤΗΤΑ ΟΛΟΓΡΑΦΩΣ")
+    number_of_invoice = models.CharField(blank=True, null=True, max_length=100, verbose_name="ΑΡΙΘΜΟΣ ΣΧΕΤΙΚΟΥ ΠΑΡΑΣΤΑΤΙΚΟΥ")
     purpose_of_moving = models.CharField(max_length=1,
                                          choices=PURPOSE_OF_MOVING,
                                          verbose_name='Σκοπός Διακίνησης',
@@ -234,6 +236,7 @@ class PaymentInvoice(models.Model):
 
     def save(self, *args, **kwargs):
         items = self.order_items.all()
+        self.total_qty = items.aggregate(Sum("qty"))["qty__sum"] or 0
         self.value = items.aggregate(Sum('clean_value'))['clean_value__sum'] if items.exists() else 0
         self.discount_value = items.aggregate(Sum('discount_value'))['discount_value__sum'] if items.exists() else 0
         self.clean_value = self.value - self.discount_value
@@ -245,8 +248,6 @@ class PaymentInvoice(models.Model):
             self.new_balance, self.old_balance = 0, 0
         if self.payment_info == '9':
             self.new_balance = self.old_balance
-
-        
 
         super().save(*args, **kwargs)
         self.costumer.update_orders()
@@ -260,6 +261,15 @@ class PaymentInvoice(models.Model):
 
     def tag_title(self):
         return self.__str__()
+
+    def tag_place(self):
+        return self.place if self.place else ""
+
+    def tag_delivery_time(self):
+        return self.delivery_time if self.delivery_time else ""
+
+    def tag_number_car(self):
+        return self.number_car if self.number_car else ""
 
     def total_qty(self):
         return self.order_items.all().aggregate(Sum('qty'))['qty__sum'] if self.order_items.exists() else 0
@@ -314,6 +324,7 @@ class CostumerDetails(models.Model):
     costumer = models.ForeignKey(Costumer, on_delete=models.PROTECT)
     invoice = models.OneToOneField(PaymentInvoice, on_delete=models.SET_NULL, related_name='profile', null=True)
     eponimia = models.CharField(null=True, max_length=240, verbose_name='Επωνυμια')
+    city = models.CharField(max_length=200, null=True, blank=True)
     address = models.CharField(blank=True, null=True, max_length=240, verbose_name='Διευθυνση')
     job_description = models.CharField(blank=True, null=True, max_length=240, verbose_name='Επαγγελμα')
     loading_place = models.CharField(blank=True, null=True, max_length=240, default='Εδρα μας',
@@ -325,29 +336,39 @@ class CostumerDetails(models.Model):
     destination_city = models.CharField(blank=True, null=True, max_length=240, verbose_name='Πολη')
     transport = models.CharField(blank=True, null=True, max_length=10, verbose_name='Μεταφορικο Μεσο')
     phone = models.CharField(blank=True, null=True, max_length=200, verbose_name='Τηλεφωνα')
+    purpose_of_another_movement = models.CharField(max_length=220, blank=True, null=True, verbose_name="ΣΚΟΠΟΣ ΑΛΛΗΣ ΔΙΑΚΙΝΗΣΗΣ")
 
     def __str__(self):
         return self.costumer.eponimia
 
+    def tag_transport(self):
+        return self.transport if self.transport else ""
+
 
 class InvoiceItem(models.Model):
+    date = models.DateField(blank=True, null=True)
     invoice = models.ForeignKey(PaymentInvoice, on_delete=models.SET_NULL, related_name='order_items', null=True)
-    product = models.ForeignKey(Product, null=True, verbose_name='Προϊον', on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, null=True, verbose_name='Προϊον', on_delete=models.CASCADE,
+                                related_name="sell_items"
+                                )
     title = models.CharField(max_length=250, verbose_name='Περιγραφη', blank=True)
-    unit = models.CharField(max_length=1, choices=QTY_TYPE, verbose_name='ΜΜ', default='1')
+    unit = models.CharField(max_length=1, choices=UNITS, verbose_name='ΜΜ', default='a')
 
     qty = models.DecimalField(max_digits=17, decimal_places=2, default=1, verbose_name='Ποσότητα')
-    value = models.DecimalField(max_digits=17, decimal_places=2, verbose_name='Τιμή')
 
+    #value = models.DecimalField(max_digits=17, decimal_places=2, verbose_name='Τιμή', default=0)
     discount = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name='Εκπτωση')
     discount_value = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name='Ποσο Εκπτωσης')
 
-    clean_value = models.DecimalField(max_digits=17, decimal_places=2, verbose_name='Αξια')
-    total_clean_value = models.DecimalField(max_digits=17, decimal_places=2, verbose_name='Καθαρη Αξια')
+    clean_value = models.DecimalField(max_digits=17, decimal_places=2, verbose_name='Καθαρη Αξια', default=0)
+    total_clean_value = models.DecimalField(max_digits=17, decimal_places=2, verbose_name='Συνολική Καθαρη Αξια')
     taxes_modifier = models.CharField(max_length=1, choices=TAXES_CHOICES, default='c', verbose_name='ΦΠΑ')
     taxes_value = models.DecimalField(max_digits=17, decimal_places=2, verbose_name='Αξια ΦΠΑ')
     total_value = models.DecimalField(max_digits=17, decimal_places=2, verbose_name='Τελικη Αξία')
-    sell_price = models.DecimalField(max_digits=17, decimal_places=2, verbose_name='Tιμη Πωλησης')
+    sell_price = models.DecimalField(max_digits=17, decimal_places=2, verbose_name='Tιμη Πωλησης', default=0)
+
+    class Meta:
+        ordering = ['-date', ]
 
     def __str__(self):
         if self.title:
@@ -355,9 +376,8 @@ class InvoiceItem(models.Model):
         return self.product.title if self.product else self.title
 
     def save(self, *args, **kwargs):
-        self.value = self.calculate_value() # returns the unit  clean value
-        print("clean value", self.value)
-        self.clean_value = self.qty * self.value # calculate the total clean value
+        self.value = self.calculate_value()  # returns the unit  clean value
+        self.clean_value = self.qty * self.value  # calculate the total clean value
         self.discount_value = self.clean_value * Decimal(self.discount/100)
 
         self.total_clean_value = self.clean_value - self.discount_value
@@ -365,9 +385,13 @@ class InvoiceItem(models.Model):
         self.total_value = self.total_clean_value + self.taxes_value
         if self.product and not self.title:
             self.title = self.product.title
+        if self.invoice:
+            self.date = self.invoice.date
 
         super().save(*args, **kwargs)
         self.invoice.save()
+        self.product.save()
+
 
     def calculate_value(self):
         """"
@@ -375,6 +399,7 @@ class InvoiceItem(models.Model):
             return (self.sell_price / ((100+Decimal(int(self.get_taxes_modifier_display())))/100))/(self.discount/100)
         print("taxes modifier",self.get_taxes_modifier_display())
         """
+        print(self.get_taxes_modifier_display())
         return self.sell_price / ((100+Decimal(int(self.get_taxes_modifier_display())))/100)
 
     def tag_value(self):
@@ -392,6 +417,13 @@ class InvoiceItem(models.Model):
 
     def tag_discount(self):
         return str(self.discount).replace('.', ',')
+    
+    @staticmethod
+    def filters_data(request, qs):
+        date_start, date_end, date_range = initial_date(request, 6)
+        if date_start and date_end:
+            qs = qs.filter(date__range=[date_start, date_end])
+        return qs
 
 
 @receiver(post_save, sender=PaymentInvoice)
@@ -418,6 +450,7 @@ def create_costumer_profile(sender, instance, **kwargs):
         profile.destination_city = costumer.destination_city
         profile.transport = costumer.transport
         profile.phone = costumer.phone
+        profile.city = costumer.city
         profile.save()
         instance.notes = costumer.notes
         instance.save()

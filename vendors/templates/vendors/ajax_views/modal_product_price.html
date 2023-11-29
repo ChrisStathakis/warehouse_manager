@@ -17,30 +17,31 @@
                   </form>
                 <h6>Αναλυση Τιμης </h6>
                 <ul class="list-group">
-                    <li class="list-group-item">Αρχική Αξια: {{ instance.tag_value }} </li>
-                    <li class="list-group-item">Εκπτωση Τιμολογιου: {{ instance.discount }} %</li>
-                    <li class="list-group-item">Καθαρη Αξια: {{ instance.tag_clean_value }}</li>
-                    <li class="list-group-item">Αξια μετα Φορους: {{ instance.tag_taxes_value }}</li>
-                    <li class="list-group-item">Επιπλεον Αξια: {{ instance.tag_added_value }}</li>
-                    <li class="list-group-item list-group-item-danger">Αξια: {{ instance.tag_final_value }}</li>
-                    <li class="list-group-item">Margin {{ product.margin }} % </li>
+                    <li class="list-group-item">ΜΕΣΗ ΤΙΜΗ {{ product.average_price }}</li>
+                    <li class="list-group-item">ΤΕΛΕΥΤΑΙΑ ΤΙΜΗ: {{ product.price_buy }} %</li>
+                    <li class="list-group-item">ΤΙΜΗ ΑΓΟΡΑ ΤΡΕΧΟΝΤΟΣ: {{ product.running_average_price }}</li>
+                    <li class="list-group-item">ΤΙΜΗ ΠΩΛΗΣΗΣ: {{ product.value }}</li>
+                    <li class="list-group-item">ΥΠΟΛΟΙΠΟ: {{ product.qty }}</li>
+                   
                 </ul>
                 <table class='table table-striped'>
                     <thead>
                       <tr>
                         <th>#</th>
+                        <th>Ημερομηνια </th>
                         <th>Προμηθευτης</th>
-                        <th>Αναλυση Τιμης</th>
-                        <th>Τελική Τιμή</th>
+                        <th>ΠΟΣΟΤΗΤΑ</th>
+                        <th>ΤΙΜΗ ΑΓΟΡΑΣ</th>
                       </tr>
                     </thead>
                     <tbody>
-                    {% for vendor in product.product_vendors.all%}
+                    {% for ele in order_items %}
                       <tr>
                         <td>{{ forllop.counter }}</td>
-                        <td>{{ vendor.vendor }}</td>
-                        <td>Καθαρή Αξία--> {{ vendor.tag_value }} | Εκπτωση--> {{ vendor.discount }}%</td>
-                        <td>{{ vendor.tag_final_value }}</td>
+                        <td>{{ ele.date }}</td>
+                        <td>{{ ele.vendor }}</td>
+                        <td>{{ ele.qty}}</td>
+                        <td> {{ ele.value }}</td>
                       <tr>
                     {% endfor %}
 

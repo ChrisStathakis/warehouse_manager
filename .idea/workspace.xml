@@ -8,16 +8,197 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="1480b706-c3a3-4352-8915-cfbc3558cf25" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shop_quick_view.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/shop_quick_view.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/my_constants.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendors/signals.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendors/templates/vendors/form_view.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendors/templates/vendors/invoice_detail.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendors/templates/vendors/list_view.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendors/templates/warehouse/ajax/ingre_modal.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendors/templates/warehouse/ajax/modal_form.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendors/templates/warehouse/ajax/product_container.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendors/templates/warehouse/ajax/product_modal.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendors/templates/warehouse/ajax/ware_product_container.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/costumers/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/costumers/admin.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/costumers/ajax_views.py" beforeDir="false" afterPath="$PROJECT_DIR$/costumers/ajax_views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/analysis/migrations/0001_initial.py" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/migrations/0001_initial.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/costumers/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/costumers/forms.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/costumers/migrations/0001_initial.py" beforeDir="false" afterPath="$PROJECT_DIR$/costumers/migrations/0001_initial.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/costumers/migrations/0002_auto_20190830_1023.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/costumers/migrations/0003_auto_20200117_1839.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/costumers/migrations/0004_auto_20200117_1848.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/costumers/migrations/0005_auto_20200123_1927.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/costumers/migrations/0006_costumerdetails_invoiceitem_paymentinvoice.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/costumers/migrations/0007_paymentinvoice_costumer.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/costumers/migrations/0008_auto_20200305_0839.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/costumers/migrations/0009_auto_20200305_1359.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/costumers/migrations/0010_auto_20200305_1451.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/costumers/migrations/0011_auto_20200306_0756.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/costumers/migrations/0012_paymentinvoice_order_type.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/costumers/migrations/0013_auto_20200306_1714.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/costumers/migrations/0014_auto_20200307_0641.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/costumers/migrations/0015_auto_20200307_0831.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/costumers/migrations/0016_auto_20200307_1427.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/costumers/migrations/0017_auto_20200307_1434.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/costumers/migrations/0018_costumerdetails_phone.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/costumers/migrations/0019_paymentinvoice_notes.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/costumers/migrations/0020_auto_20200308_1017.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/costumers/migrations/0021_auto_20200308_1104.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/costumers/migrations/0022_auto_20200308_1141.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/costumers/migrations/0023_auto_20200308_1408.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/costumers/migrations/0024_auto_20200308_1417.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/costumers/migrations/0025_auto_20200309_0624.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/costumers/migrations/0026_auto_20200309_0628.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/costumers/migrations/0027_auto_20201204_1147.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/costumers/migrations/0028_auto_20210109_1322.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/costumers/migrations/0029_auto_20210109_1326.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/costumers/migrations/0030_auto_20210109_1429.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/costumers/migrations/0031_auto_20210111_1743.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/costumers/migrations/0032_auto_20210111_1747.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/costumers/migrations/0033_auto_20210113_0930.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/costumers/migrations/0034_auto_20210114_0820.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/costumers/migrations/0035_auto_20210114_0831.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/costumers/migrations/0036_auto_20210115_0731.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/costumers/migrations/0037_auto_20210128_1644.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/costumers/migrations/0038_auto_20210205_0748.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/costumers/migrations/0039_auto_20210205_0804.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/costumers/migrations/0040_auto_20210216_0732.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/costumers/migrations/0041_auto_20210216_0734.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/costumers/migrations/0042_auto_20210216_0734.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/costumers/migrations/0043_auto_20210216_0929.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/costumers/migrations/0044_auto_20210216_1009.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/costumers/migrations/0045_auto_20210528_0957.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/costumers/migrations/0046_auto_20210902_0959.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/costumers/migrations/0047_auto_20220204_1920.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/costumers/migrations/0048_auto_20220610_1228.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/costumers/migrations/0049_alter_paymentinvoice_date.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/costumers/migrations/0050_alter_paymentinvoice_date.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/costumers/migrations/0051_alter_paymentinvoice_date.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/costumers/migrations/0052_alter_paymentinvoice_date.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/costumers/migrations/0053_alter_paymentinvoice_date.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/costumers/migrations/0054_alter_paymentinvoice_date.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/costumers/migrations/0055_alter_paymentinvoice_date.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/costumers/migrations/0056_alter_paymentinvoice_date.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/costumers/migrations/0057_alter_paymentinvoice_date.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/costumers/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/costumers/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/costumers/templates/costumers/ajax/order_items.html" beforeDir="false" afterPath="$PROJECT_DIR$/costumers/templates/costumers/ajax/order_items.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/costumers/templates/costumers/print/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/costumers/templates/costumers/print/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/costumers/templates/costumers/update_invoice.html" beforeDir="false" afterPath="$PROJECT_DIR$/costumers/templates/costumers/update_invoice.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/costumers/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/costumers/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/db_demo.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db_demo.sqlite3" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data_saves/customers.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data_saves/customers_details.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data_saves/general_expenses_category_folder.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data_saves/general_expenses_folder.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data_saves/incomes.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data_saves/invoice_items.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data_saves/invoices.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data_saves/my_cards.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data_saves/notebook.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data_saves/orders.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data_saves/orders_payment.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data_saves/payment_invoices.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data_saves/payment_methods.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data_saves/persons.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data_saves/product_categories.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data_saves/products.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data_saves/products_vendor.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data_saves/requests_backup.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data_saves/tags.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data_saves/taxes_modifiers.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data_saves/vendor_banking_account.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data_saves/vendor_employers.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data_saves/vendor_notes.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data_saves/vendor_payments.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data_saves/vendors.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/migrations/0001_initial.py" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/migrations/0001_initial.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/general_expenses/migrations/0001_initial.py" beforeDir="false" afterPath="$PROJECT_DIR$/general_expenses/migrations/0001_initial.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/general_expenses/migrations/0002_auto_20200117_1839.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/general_expenses/migrations/0003_generalexpense_paid_value.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/general_expenses/migrations/0004_auto_20230403_1407.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/general_expenses/migrations/0005_alter_generalexpense_options.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/incomes/migrations/0001_initial.py" beforeDir="false" afterPath="$PROJECT_DIR$/incomes/migrations/0001_initial.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/incomes/migrations/0002_auto_20200114_0759.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/incomes/migrations/0003_auto_20230331_0840.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/notebook/migrations/0001_initial.py" beforeDir="false" afterPath="$PROJECT_DIR$/notebook/migrations/0001_initial.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notebook/migrations/0002_auto_20200204_1216.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/notebook/migrations/0003_auto_20200204_1216.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/notebook/migrations/0004_auto_20200215_1157.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/orders/migrations/0001_initial.py" beforeDir="false" afterPath="$PROJECT_DIR$/orders/migrations/0001_initial.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/orders/migrations/0002_auto_20200308_1408.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/orders/migrations/0003_order_favorite.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/orders/migrations/0004_order_is_paid.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/orders/migrations/0005_auto_20230208_2041.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/orders/migrations/0006_alter_payment_is_paid.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/payroll/migrations/0001_initial.py" beforeDir="false" afterPath="$PROJECT_DIR$/payroll/migrations/0001_initial.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/payroll/migrations/0002_auto_20200107_1155.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/payroll/migrations/0003_auto_20200309_0624.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/payroll/migrations/0004_auto_20200309_0628.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/products/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/products/admin.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/products/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/products/forms.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/products/migrations/0001_initial.py" beforeDir="false" afterPath="$PROJECT_DIR$/products/migrations/0001_initial.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/products/migrations/0002_product_active.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/products/migrations/0003_auto_20190913_1201.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/products/migrations/0004_auto_20190913_1925.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/products/migrations/0005_auto_20190913_2031.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/products/migrations/0006_auto_20190917_1029.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/products/migrations/0007_auto_20190917_1035.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/products/migrations/0008_auto_20190920_1007.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/products/migrations/0009_auto_20190921_1907.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/products/migrations/0010_auto_20190921_1916.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/products/migrations/0011_auto_20191207_1148.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/products/migrations/0012_remove_productvendor_taxes_value.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/products/migrations/0013_productvendor_taxes_value.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/products/migrations/0014_auto_20191207_1155.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/products/migrations/0015_product_margin.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/products/migrations/0016_auto_20191214_1935.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/products/migrations/0017_productvendor_taxes_modifier.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/products/migrations/0018_auto_20200114_0759.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/products/migrations/0019_auto_20200117_1839.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/products/migrations/0020_auto_20200123_1927.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/products/migrations/0021_auto_20200203_1006.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/products/migrations/0022_auto_20200215_1157.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/products/migrations/0023_auto_20200306_0756.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/products/migrations/0024_auto_20200306_1714.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/products/migrations/0025_auto_20200308_1104.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/products/migrations/0026_auto_20210216_0929.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/products/migrations/0027_auto_20210216_1009.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/products/migrations/0028_auto_20230613_0522.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/products/migrations/0029_auto_20230617_1532.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/products/migrations/0030_auto_20230620_0154.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/products/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/products/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/shop_quick_view/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/shop_quick_view/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/products/tables.py" beforeDir="false" afterPath="$PROJECT_DIR$/products/tables.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/products/templates/products/product_update_view.html" beforeDir="false" afterPath="$PROJECT_DIR$/products/templates/products/product_update_view.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/products/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/products/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendors/action_views.py" beforeDir="false" afterPath="$PROJECT_DIR$/vendors/action_views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendors/ajax_views.py" beforeDir="false" afterPath="$PROJECT_DIR$/vendors/ajax_views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendors/apps.py" beforeDir="false" afterPath="$PROJECT_DIR$/vendors/apps.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendors/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/vendors/forms.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendors/migrations/0001_initial.py" beforeDir="false" afterPath="$PROJECT_DIR$/vendors/migrations/0001_initial.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendors/migrations/0002_payment.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendors/migrations/0003_auto_20190830_1023.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendors/migrations/0004_auto_20190907_1938.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendors/migrations/0005_auto_20190910_1206.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendors/migrations/0006_auto_20190910_1952.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendors/migrations/0007_auto_20190913_1925.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendors/migrations/0008_auto_20190917_1135.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendors/migrations/0009_auto_20190917_1149.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendors/migrations/0010_auto_20190917_1150.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendors/migrations/0011_auto_20190917_1759.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendors/migrations/0012_auto_20190918_1234.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendors/migrations/0013_auto_20190921_1907.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendors/migrations/0014_auto_20191109_1929.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendors/migrations/0015_auto_20191207_1102.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendors/migrations/0016_vendor_identifier.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendors/migrations/0017_auto_20210109_1322.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendors/migrations/0018_auto_20210216_0929.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendors/migrations/0019_vendor_job_description.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendors/migrations/0020_paycheck.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendors/migrations/0021_auto_20230208_2040.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendors/migrations/0022_auto_20230331_0840.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendors/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/vendors/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendors/tables.py" beforeDir="false" afterPath="$PROJECT_DIR$/vendors/tables.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendors/templates/vendors/update_vendor.html" beforeDir="false" afterPath="$PROJECT_DIR$/vendors/templates/vendors/update_vendor.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendors/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/vendors/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendors/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/vendors/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -114,8 +295,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Python Script" />
         <option value="HTML File" />
+        <option value="Python Script" />
       </list>
     </option>
   </component>
@@ -226,9 +407,9 @@
       <path value="$PROJECT_DIR$/static/vendor/select2/package.json" />
     </packageJsonPaths>
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 5
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 5
+}</component>
   <component name="ProjectFrameBounds" extendedState="6">
     <option name="x" value="-175" />
     <option name="y" value="227" />
@@ -267,24 +448,24 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_ADD_EXTERNAL_FILES": "true",
-    "DefaultHtmlFileTemplate": "HTML File",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "master",
-    "last_opened_file_path": "D:/projects/Grigoris-warehouse",
-    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
+    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/projects/Grigoris-warehouse/vendors/templates/warehouse&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\projects\Grigoris-warehouse\vendors\templates\warehouse" />
       <recent name="D:\projects\Grigoris-warehouse\vendors\templates\categories\ajax" />
       <recent name="D:\projects\Grigoris-warehouse\data_saves" />
       <recent name="$PROJECT_DIR$/shop_quick_view" />
       <recent name="$PROJECT_DIR$" />
-      <recent name="C:\Users\Zefarak\Desktop\projects\quick-shop-manager\costumers\templates\costumers\print" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/products/templates/products" />
@@ -398,17 +579,17 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/costumers/models.py</url>
-          <line>357</line>
+          <line>375</line>
           <option name="timeStamp" value="8" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/costumers/models.py</url>
-          <line>46</line>
+          <line>48</line>
           <option name="timeStamp" value="10" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/costumers/models.py</url>
-          <line>158</line>
+          <line>160</line>
           <option name="timeStamp" value="12" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -421,13 +602,18 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/costumers/models.py</url>
-          <line>171</line>
+          <line>173</line>
           <option name="timeStamp" value="17" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/general_expenses/models.py</url>
           <line>9</line>
           <option name="timeStamp" value="18" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/vendors/views.py</url>
+          <line>301</line>
+          <option name="timeStamp" value="19" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

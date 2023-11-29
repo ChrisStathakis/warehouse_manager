@@ -6,8 +6,11 @@ from importlib_metadata import requires
 
 from products.models import ProductVendor, Product
 from products.forms import ProductClassForm
-from .models import Vendor, Invoice, Payment, Employer, PaymentMethod, VendorBankingAccount, Note
-from .forms import InvoiceVendorDetailForm, EmployerForm, PaymentForm, InvoiceForm, VendorBankingAccountForm, NoteForm, VendorProductForm, ProductVendorClassForm, CopyProductToNewVendor, CopyProductFromVendorCardForm, PaycheckForm
+from .models import Vendor, Invoice, Payment, Employer, PaymentMethod, VendorBankingAccount, Note, InvoiceItem
+from .forms import (InvoiceVendorDetailForm, EmployerForm, PaymentForm, InvoiceForm, VendorBankingAccountForm, NoteForm,
+                    VendorProductForm, ProductVendorClassForm, CopyProductToNewVendor, CopyProductFromVendorCardForm,
+                    PaycheckForm, InvoiceItemForm, InvoiceProductForm
+                    )
 
 
 @staff_member_required
@@ -284,3 +287,69 @@ def action_form_copy_vendor_product_view(request, pk):
         return redirect(product_vendor.vendor.get_card_url())
 
     return render(request, 'form_view.html', context=locals())
+
+
+
+@staff_member_required
+def validate_create_invoice_order_item_view(request, pk):
+    instance = get_object_or_404(Invoice, id=pk)
+    form = InvoiceItemForm(request.POST or None, initial={'invoice': instance,
+                                                          'vendor': instance.vendor,
+                                                          })
+    if form.is_valid():
+        data = form.save()
+        product = data.product
+        product.price_buy = data.value
+        product.order_sku = data.order_code
+        product.order_discount = data.discount
+        product.save()
+
+
+    else:
+        print(form.errors)
+    return redirect(instance.get_edit_url())
+
+
+@staff_member_required
+def validate_order_item_update_view(request, pk):
+    instance = get_object_or_404(InvoiceItem, id=pk)
+    form = InvoiceItemForm(request.POST or None, instance=instance)
+    if form.is_valid():
+        form.save()
+
+    return redirect(instance.invoice.get_edit_url())
+
+
+@staff_member_required
+def delete_invoice_item_view(request, pk):
+    instance = get_object_or_404(InvoiceItem, id=pk)
+    instance.delete()
+    return redirect(instance.invoice.get_edit_url())
+
+
+@staff_member_required
+def create_product_from_invoice(request, pk):
+    instance = get_object_or_404(Invoice, id=pk)
+    form = InvoiceProductForm(request.POST or None, initial={'vendor': instance.vendor,})
+    if form.is_valid():
+        product = form.save()
+       
+        qty = form.cleaned_data.get('qty', 1)
+        new_item = InvoiceItem.objects.create(
+                    order_code=product.order_code,
+                    vendor=instance.vendor,
+                    invoice=instance,
+                    product=product,
+                    unit=product.unit,
+                    qty=qty,
+                    value=product.price_buy,
+                    discount=0,
+                    taxes_modifier=product.taxes_modifier,
+                    
+                )
+
+        
+        return redirect(instance.get_edit_url())
+    else:
+        messages.warning(request, form.errors)
+    return redirect(instance.get_edit_url())

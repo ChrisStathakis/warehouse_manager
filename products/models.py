@@ -6,8 +6,9 @@ from django.conf import settings
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 
 from vendors.models import Vendor, TAXES_CHOICES
-from django.db.models import Min, Q, Avg
-from mptt.models import MPTTModel, TreeForeignKey 
+from django.db.models import Min, Q, Avg, Sum, Window, F
+
+from frontend.my_constants import UNITS
 
 PRODUCTION = settings.PRODUCTION
 CURRENCY = settings.CURRENCY
@@ -31,18 +32,12 @@ class PriceList(models.Model):
         return reverse("price_list_create")
 
 
-class Category(MPTTModel):
+class Category(models.Model):
     name = models.CharField(max_length=240, unique=True)
-    parent = TreeForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children')
-    active = models.BooleanField(default=False)
+
     
     def __str__(self):
-        full_path = [self.name]
-        k = self.parent
-        while k is not None:
-            full_path.append(k.name)
-            k = k.parent
-        return ' -> '.join(full_path[::-1])
+        return self.name
 
     def get_edit_url(self):
         return reverse('vendors:category_update', kwargs={'pk': self.id})
@@ -57,7 +52,6 @@ class Category(MPTTModel):
     def filters_data(request, qs):
         search_name = request.GET.get('search_name', None)
         q = request.GET.get('q', None)
-        print('q is',q)
         qs = qs.filter(name__icontains=q) if q else qs
         qs = qs.filter(name__contains=search_name) if search_name else qs
         return qs
@@ -67,19 +61,24 @@ class Product(models.Model):
     active = models.BooleanField(default=True)
     title = models.CharField(max_length=150, verbose_name='Ονομασια')
     sku = models.CharField(max_length=50, blank=True)
+    order_code = models.CharField(max_length=220, blank=True, null=True)
     barcode = models.CharField(max_length=20, blank=True)
     vendors = models.ManyToManyField(Vendor, through='ProductVendor', verbose_name='Προμηθευτές', blank=True)
+    unit = models.CharField(default='a', max_length=1, choices=UNITS)
     categories = models.ManyToManyField(Category, verbose_name='Κατηγορίες', blank=True)
     qty = models.DecimalField(default=0, verbose_name='Ποσότητα', decimal_places=2, max_digits=20)
-    apography_price = models.DecimalField(default=0, max_digits=19, decimal_places=2)
-    price_buy = models.DecimalField(max_digits=20, decimal_places=2, verbose_name='Αξία Αγορας', default=0.00)
+    safe_qty = models.IntegerField(default=0, null=True, verbose_name="Ελάχιστη ποσότητα")
+    price_buy = models.DecimalField(max_digits=20, decimal_places=2, verbose_name='Τελευταία Τιμή Αγοράς', default=0.00)
     value = models.DecimalField(max_digits=20, decimal_places=2, verbose_name='Τιμή Πώλησης', )
-    value_per_unit = models.DecimalField(max_digits=20, decimal_places=2, verbose_name='Τιμή ανα Μοναδα ', default=0)
-    value_discount = models.DecimalField(max_digits=20, decimal_places=2, verbose_name='Τιμή Έκπτωσης/Σακιου', default=0.00)
+
+    average_price = models.DecimalField(max_digits=20, decimal_places=2, verbose_name='Μεση Τιμή', default=0.00)
+    running_average_price = models.DecimalField(max_digits=20, decimal_places=2, verbose_name='Τρέχων Μεση Τιμή', default=0.00)
+
     final_value = models.DecimalField(max_digits=20, decimal_places=2, default=0.00)
     margin = models.DecimalField(default=0, decimal_places=2, max_digits=10)
     taxes_modifier = models.CharField(max_length=1, choices=TAXES_CHOICES, null=True, blank=True)
     price_list = models.ManyToManyField(PriceList, verbose_name="prices_list", blank=True)
+
 
     def __str__(self):
         return self.title
@@ -88,23 +87,48 @@ class Product(models.Model):
         verbose_name = 'Προϊόν'
          # verbose_plural_name = 'Προϊόντα'
 
+    
+    def save(self, *args, **kwargs):
+        self.title = self.title.upper()
+        self.barcode = self.create_barcode()
+        self.final_value = self.value
+
+        invoice_qs = self.invoice_vendor_items.all()
+        self.running_average_price = invoice_qs[:3].aggregate(avg=Avg("value"))['avg'] or 0
+        sell_qs = self.sell_items.all()
+        add_qty = invoice_qs.aggregate(total_qty=Sum("qty"))['total_qty'] if invoice_qs.exists() else 0
+        sell_qty = sell_qs.aggregate(total_qty=Sum("qty"))["total_qty"] if sell_qs.exists() else 0
+
+        self.qty = add_qty - sell_qty
+        self.margin = 0
+        self.average_price = self.estimate_average_price(invoice_qs)
+        if invoice_qs:
+            self.price_buy = invoice_qs.first().value
+        else:
+            self.price_buy = 0
+        super(Product, self).save(*args, **kwargs)
+
+    def estimate_average_price(self, invoice_qs):
+        remaining_qty = invoice_qs.aggregate(total_qty=Sum("remaining_qty"))['total_qty'] if invoice_qs.exists() else 0
+        remaining_total_cost = invoice_qs.aggregate(total=Sum("remaining_total_cost"))['total'] if invoice_qs.exists() else 0
+        print(remaining_qty, remaining_total_cost)
+        return remaining_total_cost/remaining_qty if remaining_qty != 0 else 0
+    
     def get_edit_url(self):
         return reverse('edit_product_update', kwargs={'pk': self.id})
 
     def get_copy_url(self):
         return reverse('copy_product_view', kwargs={'pk': self.id})
 
-    def save(self, *args, **kwargs):
-        self.barcode = self.create_barcode()
+    def tag_color_qty(self):
+        if self.safe_qty == 0:
+            return 'white'
+        if self.qty - self.safe_qty > 2:
+            return 'red'
+        return 'white'
 
-        self.final_value = self.value
-        if self.value_discount:
-            self.final_value = self.value_discount if self.value_discount > 0 else self.value
-        self.margin =((self.value - self.price_buy)/self.price_buy)*100 if self.price_buy > 0 else 0
-        super(Product, self).save(*args, **kwargs)
-
-    def tag_value(self):
-        return f'{self.price_buy} {CURRENCY}'
+    def tag_average_price(self):
+        return f'{self.average_price} {CURRENCY}'
 
     def tag_final_value(self):
         final_value = round(self.final_value, 2)
@@ -165,7 +189,9 @@ class Product(models.Model):
                                ).distinct()
         else:
             if q:
-                qs = qs.filter(title__icontains=q)
+                qs = qs.filter(title__icontains=q.upper())
+            if search_name:
+                qs = qs.filter(title__icontains=search_name.upper())
 
 
         return qs

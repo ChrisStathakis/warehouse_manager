@@ -4,12 +4,8 @@
         <th>Περιγραφή</th>
         <th>ΜΜ</th>
         <th>Ποσοτητα</th>
-        <th>Αξια</th>
-        <th>Αξια Πωλησης</th> 
-        <th>Εκπτωση</th>
-        <th>ΦΠΑ</th>
-        <th>ΣΥΝΟΛΟ ΚΑΘ. ΑΞΙΑ</th>
-        <th>ΣΥΝΟΛΟ ΑΞΙΑ</th>
+        <th>ΑΞΙΑ ΑΓΟΡΑΣ</th>
+        <th>ΑΞΙΑ ΠΩΛΗΣΗΣ</th>
         <th>-</th>
     </tr>
     </thead>
@@ -19,13 +15,8 @@
             <td><a href="{{ item.get_edit_url }}">{{ item }}</a> </td>
             <td>{{ item.get_unit_display }}</td>
             <td>{{ item.qty }}</td>
-            <td class="table-success" >{{ item.value }}</td>
+            <td class="table-success" >{{ item.product.price_buy }}</td>
             <td class="table-warning">{{ item.sell_price }}</td>
-            
-            <td>{{ item.discount }} %</td>
-            <td>{{ item.get_taxes_modifier_display }} %</td>
-            <td class="table-success" >{{ item.total_clean_value }}</td>
-            <td class="table-warning">{{ item.total_value }}</td>
             <td><button data-href="{% url 'costumers:ajax_delete_order_item' item.id %}" class="btn btn-warning delete_button"><i class="fa fa-remove"></i> </button> </td>
         </tr>
     {% empty %}
@@ -37,13 +28,9 @@
     <tfoot>
         <tr>
             <th>ΣΥΝΟΛΑ</th>
-            <th>-</th>
             <th>{{ object.total_qty }}</th>
-            <th>-</th>
-            <th>-</th>
-            <th>-</th>
             <th>{{  object.taxes_value }}</th>
-            <th>{{ object.clean_value }}</th>
+            <th>-</th>
             <th>{{ object.final_value }}</th>
             <th>-</th>
         </tr>

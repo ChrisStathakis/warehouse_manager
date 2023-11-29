@@ -4,7 +4,7 @@ from tinymce.widgets import TinyMCE
 
 from .models import (Vendor, Invoice, Payment, Vendor, Employer,
                     VendorBankingAccount, Note, TAXES_CHOICES,
-                    Paycheck
+                    Paycheck, InvoiceItem
                     
                     )
 
@@ -49,7 +49,7 @@ class InvoiceForm(BaseForm, forms.ModelForm):
 
     class Meta:
         model = Invoice
-        fields = '__all__'
+        fields = ['date', 'vendor', 'title', 'payment_method', 'description', 'extra_value']
 
 
 class PaymentForm(BaseForm, forms.ModelForm):
@@ -137,3 +137,29 @@ class PaycheckForm(BaseForm, forms.ModelForm):
     class Meta:
         model = Paycheck
         fields = ['is_done', 'date', 'vendor', 'title', 'value']
+
+
+class InvoiceProductForm(BaseForm, forms.ModelForm):
+    vendor = forms.ModelChoiceField(queryset=Vendor.objects.all(), widget=forms.HiddenInput(), required=True)
+    qty = forms.DecimalField(label='Ποσότητα', required=True)
+    price_buy = forms.DecimalField(label='Αξια', widget=forms.NumberInput(attrs={'step': '0.001'}))
+
+    class Meta:
+        model = Product
+        fields = ['order_code', 'title', 'taxes_modifier',
+                  'unit',
+                  'vendor', 'price_buy',
+                  'qty', 'value'
+                ]
+
+
+class InvoiceItemForm(BaseForm, forms.ModelForm):
+    vendor = forms.ModelChoiceField(queryset=Vendor.objects.all(), widget=forms.HiddenInput())
+    invoice = forms.ModelChoiceField(queryset=Invoice.objects.all(), widget=forms.HiddenInput())
+    product = forms.ModelChoiceField(queryset=Product.objects.all(), widget=forms.HiddenInput())
+
+    class Meta:
+        model = InvoiceItem
+        fields = ['order_code', 'unit', 'qty', 'value', 'discount',
+                  'taxes_modifier', 'vendor', 'invoice', 'product'
+                  ]

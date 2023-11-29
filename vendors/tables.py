@@ -1,6 +1,6 @@
 import django_tables2 as tables
 
-from .models import Invoice, Payment, Vendor, Paycheck
+from .models import Invoice, Payment, Vendor, Paycheck, InvoiceItem
 from products.models import Product
 
 
@@ -39,7 +39,7 @@ class VendorTable(tables.Table):
     class Meta:
         model = Vendor
         template_name = 'django_tables2/bootstrap.html'
-        fields = ['identifier', 'title', 'afm', 'phone',  'email', 'tag_balance']
+        fields = ['title', 'afm', 'phone',  'email', 'tag_balance']
 
 
 class PaycheckTable(tables.Table):
@@ -53,5 +53,26 @@ class PaycheckTable(tables.Table):
         fields = ['date', 'vendor', 'title', 'value', 'is_done']
     
 
+class InvoiceTable(tables.Table):
+    
+    order_type = tables.Column(verbose_name='Ειδος')
+    date = tables.TemplateColumn("<p>{{ record.date|date:'d/M/Y'}} </p>")
+    action = tables.TemplateColumn("<a href='{{ record.get_edit_url}}' target='_blank' class='btn btn-warning'><span class='fa fa-edit'></span></a>", 
+            orderable=False, verbose_name='-')
 
+    class Meta:
+        model = Invoice
+        template_name = 'django_tables2/bootstrap.html'
+        fields = ['date', 'title', 'vendor',  'value','final_value']
+
+
+
+class InvoiceItemTable(tables.Table):
+    tag_date = tables.Column(verbose_name='Ημερομηνια')
+    button = tables.TemplateColumn("<a href='{{ record.get_locked_url }}' class='btn btn-info'><i class='fa fa-plus'></i> </a>",
+                                   orderable=False, verbose_name='-')
+    class Meta:
+        model = InvoiceItem
+        template_name = 'django_tables2/bootstrap.html'
+        fields = ['tag_date', 'product', 'order_code', 'vendor', 'final_value', 'qty', 'locked', 'button']
     

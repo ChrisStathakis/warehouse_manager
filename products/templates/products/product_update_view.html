@@ -16,7 +16,24 @@
             <div class='col-md-12'>
                 <div class='card'>
                     <div class='card-header'>
-                        <h4>Barcode... {{ object.barcode }} | Sku... {{ object.sku }}</h4>
+                        <h4>{{ object }}</h4>
+                        <table class="table table-bordered">
+                            <tbody>
+                                <tr>
+                                    <th> Sku: {{ object.sku }}</th>
+                                    <th>ΤΕΛΕΥΤΑΙΑ ΤΙΜΗ ΑΓΟΡΑΣ: {{ object.tag_price_buy }}</th>
+                                    <th> ΑΠΟΘΕΜΑ: {{ object.qty }} {{ object.get_unit_display }}</th>
+                                </tr>
+                                <tr>
+                                    <th>ΜΕΣΗ ΤΙΜΗ: {{ object.average_price }}</th>
+                                    
+                                    <th>ΤΡΕΧΩΝ ΜΕΣΗ  ΤΙΜΗ: {{ object.running_average_price }}</th>
+                                    
+                                </tr>
+                            </tbody>
+                        </table>
+                       
+                        
                         <a style="display: inline" href="{% url 'edit_product_list' %}" class="btn btn-warning pull-right">Επιστροφη</a>
                     </div>
                     <div class='card-body'>
@@ -43,34 +60,55 @@
             </div>
 
             <div class='col-md-7'>
-                <div class='card'>
+                <div class="card">
+                    <div class="card-header">
+                        
+                        <a class="btn btn-primary" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+                            Filters
+                        </a>
+                        <a href="{{ request.path }}" class="btn btn-danger">Καθαρισμος</a>
+                        
+                    </div>
+                    <div class="card-body">
+                        <div class="collapse" id="collapseExample">
+                            <form method="get" class="form">
+                                 <div class="row">
+                                      {% include 'filters/my_filters.html' %}
+                                 </div>
+                                 <button type="submit" class="btn btn-"><i class="fa fa-save"></i> Αποθηκευση </button>
+                            </form>
+
+                        </div>
+                    </div>
+                </div>
+            
+                <div class='card' style="height:500px;overflow-y: scroll;">
                     <div class='card-header'>
-                        <h4>Επεξεργασια Πρoμηθευτών</h4>
+                        <h4>ΑΓΟΡΕΣ</h4>
                     </div>
 
                     <div class='card-body'>
                         <table class='table'>
                             <thead>
                                 <tr>
+                                    <th>Ημερομηνία</th>
                                     <th>Κωδικός Τιμ</th>
                                     <th>Προμηθευτης</th>
-                                    <th>Καθαρη Αξία</th>
-                                    <th>Εκπτωση</th>
-                                    <th>Επιπλέον Αξία</th>
-                                    <th>Αξια</th>
-                                    <th>#</th>
+                                    <th>Αξία</th>
+                                    <th>ΠΟΣΟΤΗΤΑ</th>
+                                    <th>ΥΠΟΛΟΙΠΟ</th>
+                                    
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for vendor in object.product_vendors.all %}
+                                {% for ele in vendor_invoices %}
                                     <tr>
-                                        <td>{{ vendor.sku|default_if_none:"-" }}</td>
-                                        <td>{{ vendor }}</td>
-                                        <td>{{ vendor.tag_clean_value }}</td>
-                                        <td>{{ vendor.discount }} %</td>
-                                        <td>{{ vendor.tag_added_value}} </td>
-                                        <td>{{ vendor.tag_final_value }}</td>
-                                        <td><a href="{{ vendor.get_edit_url }}" class="btn btn-info"><i class="fa fa-edit"> </i> </a></td>
+                                        <td>{{ ele.date }}</td>
+                                        <td>{{ ele.order_code|default_if_none:"-" }}</td>
+                                        <td>{{ ele.vendor }}</td>
+                                        <td>{{ ele.value }}</td>
+                                        <td>{{ ele.qty }} </td>
+                                        <td>{{ ele.remaining_qty }} </td>    
                                     </tr>
                                 {% endfor %}
                                     <tr>
@@ -81,16 +119,39 @@
                     </div>
                 </div>
 
-                <div class='card'>
+                <div class='card'style="height:500px;overflow-y: scroll;">
                     <div class='card-header'>
-                        <h4>Προσθηκη Προμηθευτη</h4>
+                        <h4>ΠΩΛΗΣΕΙΣ</h4>
                     </div>
 
                     <div class='card-body'>
-                        <form method='post' class='form' action='{% url "product_vendor_create" object.id %}'> {% csrf_token %}
-                             {{ product_vendor_form }}
-                             <button type="sumbit" class="btn btn-primary btn-primary"><i class='fa fa-plus'> </i> Προσθηκη Προμηθευτη</button>
-                        </form>
+                        <table class='table'>
+                            <thead>
+                                <tr>
+                                    <th>Ημερομηνία</th>
+                                    <th>Τιμολόγιο</th>
+                                    <th>ΠΕΛΑΤΗΣ</th>
+                                    <th>Αξία</th>
+                                    <th>ΠΟΣΟΤΗΤΑ</th>
+                                    
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for ele in sell_invoices %}
+                                    <tr>
+                                        <td>{{ ele.date }}</td>
+                                        <td>{{ ele.invoice }}</td>
+                                        <td>{{ ele.invoice.profile }}</td>
+                                        <td>{{ ele.sell_price }}</td>
+                                        <td>{{ ele.qty }} </td>
+                                        
+                                    </tr>
+                                {% endfor %}
+                                    <tr>
+                                        <td colspan='7'> </td>
+                                    </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>

@@ -2,6 +2,7 @@ from django import forms
 from .models import Costumer, PaymentInvoice, CostumerDetails, InvoiceItem, Product
 from dal import autocomplete
 
+
 class BaseForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
@@ -14,25 +15,24 @@ class CostumerForm(BaseForm, forms.ModelForm):
 
     class Meta:
         model = Costumer
-        fields = ['active', 'eponimia', 'amka', 'cellphone', 'afm', 'doy',
-                  'address', 'job_description', 'loading_place', 'destination',
+        fields = ['active', 'eponimia', 'cellphone', 'afm', 'doy',
+                  'address', 'city', 'job_description', 'loading_place',
                   'destination_city', 'transport', 'phone', 'notes'
          ]
 
 
 class PaymentInvoiceForm(BaseForm, forms.ModelForm):
-    # date = forms.DateTimeField(required=True, widget=forms.DateTimeInput(attrs={'type': 'datetime-local'}),
-    #                          label='Ημερομηνια')
+    date = forms.DateTimeField(required=True, widget=forms.DateTimeInput(attrs={'type': 'datetime-local'}),label='Ημερομηνια')
 
     class Meta:
         model = PaymentInvoice
-        fields = ['date', 'order_type', 'series', 'card_info', 'costumer', 'purpose_of_moving',
-                  'payment_info', 'charges_cost', 'notes'
+        fields = ['date', "delivery_time", "place", "writing_qty", "number_of_invoice",
+                  'order_type', 'series', 'card_info', 'costumer',
+
                   ]
 
     def clean_date(self):
         date = self.cleaned_data.get('date', '')
-        print('date', date)
         return date
 
 
@@ -57,7 +57,7 @@ class CreateInvoiceItemForm(BaseForm, forms.ModelForm):
 
     class Meta:
         model = InvoiceItem
-        fields = ['title', 'unit', 'qty', 'sell_price', 'discount',
+        fields = ['title', 'unit', 'qty', "sell_price",
                   'taxes_modifier', 'invoice']
 
 
@@ -67,7 +67,6 @@ class UpdateInvoiceItemForm(BaseForm, forms.ModelForm):
 
     class Meta:
         model = InvoiceItem
-        fields = ['title', 'product', 'unit', 'qty', 'sell_price', 'discount', 
-                  'taxes_modifier', 'invoice']
+        fields = ['title', 'product', 'unit', "sell_price", 'qty', 'invoice']
 
 

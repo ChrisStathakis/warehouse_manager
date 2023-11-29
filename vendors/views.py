@@ -10,12 +10,16 @@ from django.urls import reverse_lazy, reverse
 
 
 from django_tables2 import RequestConfig
-from .tables import VendorTable, PaycheckTable
+from .tables import VendorTable, PaycheckTable, InvoiceTable
 from products.models import Product, ProductVendor, Category
-from .models import Paycheck, Vendor, Note, Invoice
-from .forms import VendorForm, InvoiceVendorDetailForm, EmployerForm, PaymentForm, NoteForm, VendorProductForm, Payment
+from .models import Paycheck, Vendor, Note, Invoice, InvoiceItem
+from .forms import (VendorForm, InvoiceVendorDetailForm, EmployerForm, PaymentForm,
+                    NoteForm, VendorProductForm, Payment, InvoiceForm, InvoiceProductForm,
+                    InvoiceItemForm
+                    )
 from costumers.models import Costumer
 from .forms import PaycheckForm
+
 
 @method_decorator(staff_member_required, name='dispatch')
 class HomepageView(TemplateView):
@@ -104,6 +108,77 @@ class UpdateVendorView(UpdateView):
 
 
 @staff_member_required
+def invoices_vendor_list_view(request, pk):
+    vendor = get_object_or_404(Vendor, id=pk)
+    invoices = Invoice.filters_data(request, vendor.invoices.all())
+    qs_table = InvoiceTable(invoices)
+    RequestConfig(request, paginate={'per_page': 25}).configure(qs_table)
+    queryset_table = qs_table
+    create_url = reverse('vendors:invoice_vendor_create', kwargs={"pk": pk})
+    page_title, back_url = 'Προμηθευτές', reverse('vendors:update', kwargs={"pk": pk})
+    return render(request, "vendors/list_view.html", locals())
+
+
+@method_decorator(staff_member_required, name='dispatch')
+class CreateInvoiceView(CreateView):
+    template_name = 'vendors/form_view.html'
+    model = Invoice
+    form_class = InvoiceForm
+
+    def get_initial(self):
+        initial = super().get_initial()
+        vendor = get_object_or_404(Vendor, id=self.kwargs.get("pk"))
+        initial['vendor'] = vendor
+        return initial
+
+    def get_success_url(self):
+        return self.new_object.get_edit_url()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["form_title"], context['back_url'], = ('Δημιουργια Παραστατικού',
+                                                       reverse('vendors:invoices_vendor', kwargs={"pk": 1}))
+        context['popup'] = True
+        return context
+
+    def form_valid(self, form):
+        self.new_object = form.save()
+        new_vendor = form.cleaned_data['title']
+        messages.success(self.request, f'Το Παραστατικο {new_vendor} δημιουργήθηκε.')
+        return super().form_valid(form)
+
+
+@method_decorator(staff_member_required, name='dispatch')
+class InvoiceDetailView(UpdateView):
+    model = Invoice
+    template_name = 'vendors/invoice_detail.html'
+    form_class = InvoiceForm
+
+    def get_success_url(self):
+        return self.object.get_edit_url()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        products = Product.objects.all()
+        context['product_form'] = InvoiceProductForm(initial={'vendor': self.object.vendor})
+        context['order_items'] = self.object.order_items.all()
+
+        q = self.request.GET.get('q', None)
+        if q:
+            products = Product.filters_data(self.request, products)
+        context['products'] = products
+        context['page_title'] = f'{self.object.title}'
+        return context
+
+
+@staff_member_required
+def delete_invoice_view(request, pk):
+    instance = get_object_or_404(Invoice, id=pk)
+    instance.delete()
+    return redirect(reverse('warehouse:invoice_list'))
+
+
+@staff_member_required
 def print_vendor_view(request, pk):
     instance = get_object_or_404(Vendor, id=pk)
     orders, payments = Invoice.filters_data(request, instance.invoices.all()), \
@@ -124,7 +199,7 @@ def change_note_status_view(request, pk):
 
 @staff_member_required
 def create_costumer_from_vendor_view(request, pk):
-    vendor = get_object_or_404(Vendor,id=pk)
+    vendor = get_object_or_404(Vendor, id=pk)
     new_costumer = Costumer.objects.create(
         eponimia=vendor.title,
         address=vendor.address,
@@ -193,14 +268,16 @@ def delete_note_view(request, pk):
 
 @method_decorator(staff_member_required, name='dispatch')
 class VendorCardView(ListView):
-    model = ProductVendor
+    model = Product
     template_name = 'vendors/vendor_card.html'
     paginate_by = 500
     
     def get_queryset(self):
         self.vendor = vendor = get_object_or_404(Vendor, id=self.kwargs['pk'])
-        qs = ProductVendor.objects.filter(vendor=vendor)
-        qs = ProductVendor.filters_data(self.request, qs)
+        order_items = InvoiceItem.objects.filter(vendor=vendor)
+        product_ids = order_items.values_list("product_id").distinct()
+        qs = self.model.objects.filter(id__in=product_ids)
+        qs = Product.filters_data(self.request, qs)
         return qs
 
     def get_context_data(self, **kwargs):
@@ -208,8 +285,8 @@ class VendorCardView(ListView):
         context["vendor"] = self.vendor
         context['create_form'] = VendorProductForm(initial={'taxes_modifier': self.vendor.taxes_modifier})
         context['search_filter'], context['category_filter'] = [True] * 2
-        cate_ids = self.object_list.values_list('product__categories').distinct()
-        context['categories'] = Category.objects.filter(id__in=cate_ids)
+        # cate_ids = self.object_list.values_list('product__categories').distinct()
+        # context['categories'] = Category.objects.filter(id__in=cate_ids)
         return context
 
 
@@ -283,3 +360,28 @@ def paycheck_delete_view(request, pk):
     print ('', instance)
     instance.delete()
     return redirect(instance.vendor.get_edit_url())
+
+
+@method_decorator(staff_member_required, name='dispatch')
+class InvoiceListView(ListView):
+    model = Invoice
+    template_name = 'vendors/list_view.html'
+    paginate_by = 30
+
+    def get_queryset(self):
+        qs = Invoice.objects.all()
+        qs = Invoice.filters_data(self.request, qs)
+        return qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        qs_table = InvoiceTable(self.object_list)
+        RequestConfig(self.request, paginate={'per_page': self.paginate_by}).configure(qs_table)
+        queryset_table = qs_table
+        # create_url = reverse('ven:invoice_create')
+        # page_title, back_url = 'Προμηθευτές', reverse('warehouse:homepage')
+        # report_button, report_url = True, reverse('vendors:ajax_vendors_balance')
+        vendors = Vendor.objects.filter(active=True)
+        vendor_filter, search_filter, date_filter = [True] * 3
+        context.update(locals())
+        return context

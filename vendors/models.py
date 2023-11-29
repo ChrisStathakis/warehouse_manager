@@ -8,17 +8,12 @@ from django.dispatch import receiver
 
 from tinymce.models import HTMLField
 from decimal import Decimal
-from frontend.models import PaymentMethod
 
+from frontend.models import PaymentMethod
 from frontend.tools import initial_date
+from frontend.my_constants import TAXES_CHOICES, UNITS
 
 CURRENCY = settings.CURRENCY
-TAXES_CHOICES = (
-    ('a', 0),
-    ('d', 6),
-    ('b', 13),
-    ('c', 24)
-)
 
 
 class Vendor(models.Model):
@@ -127,7 +122,7 @@ class VendorBankingAccount(models.Model):
 class Invoice(models.Model):
     date = models.DateField(verbose_name='Ημερομηνια')
     title = models.CharField(max_length=150, verbose_name='Αριθμος Τιμολογιου')
-    payment_method = models.ForeignKey(PaymentMethod, on_delete=models.PROTECT, null=True, verbose_name='Τροπος Πληρωμης')
+    payment_method = models.ForeignKey(PaymentMethod, on_delete=models.PROTECT, null=True, verbose_name='Τροπος Πληρωμης', blank=True)
     vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE, related_name='invoices', verbose_name='Προμηθευτης')
     value = models.DecimalField(decimal_places=2, max_digits=20, verbose_name='Καθαρή Αξια')
     extra_value = models.DecimalField(decimal_places=2, max_digits=20, verbose_name='Επιπλέον Αξία')
@@ -143,7 +138,10 @@ class Invoice(models.Model):
         ordering = ['-date']
 
     def save(self, *args, **kwargs):
-        self.final_value = self.value + self.extra_value
+        qs = self.order_items.all()
+        self.value = qs.aggregate(Sum('total_clean_value'))['total_clean_value__sum'] if qs.exists() else 0.00
+        self.taxes_value = qs.aggregate(Sum('taxes_value'))['taxes_value__sum'] if qs.exists() else 0.00
+        self.final_value = round(Decimal(self.value) + Decimal(self.extra_value) + Decimal(self.taxes_value), 2)
         super(Invoice, self).save(*args, **kwargs)
         if self.vendor:
             self.vendor.update_value()
@@ -157,16 +155,111 @@ class Invoice(models.Model):
     def tag_value(self):
         return f'{self.final_value} {CURRENCY}'
 
+    def get_edit_url(self):
+        return reverse('vendors:invoice_update', kwargs={'pk': self.id})
+
+    def get_delete_url(self):
+        return reverse('vendors:vendor_delete', kwargs={'pk': self.id})
+
     @staticmethod
     def filters_data(request, qs):
         date_start, date_end, date_range = initial_date(request, 6)
-        print('start', date_start, 'end', date_end)
         search_name = request.GET.get('search_name', None)
         qs = qs.filter(title__icontains=search_name) if search_name else qs
         if date_start and date_end:
-            print('hitted!', date_end, date_start)
+
             qs = qs.filter(date__range=[date_start, date_end])
-        print(qs.count())
+
+        return qs
+
+
+class InvoiceItem(models.Model):
+    date = models.DateField(verbose_name='Ημερομηνια', blank=True, null=True)
+    order_code = models.CharField(max_length=50, blank=True, verbose_name='Κωδικος Τιμολογιου', null=True)
+    vendor = models.ForeignKey(Vendor, on_delete=models.PROTECT, verbose_name='Προμηθευτης')
+    invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE, related_name='order_items')
+    product = models.ForeignKey("products.Product", on_delete=models.PROTECT, related_name='invoice_vendor_items', verbose_name='Προϊον')
+
+    unit = models.CharField(max_length=1, choices=UNITS, default='a', verbose_name='ΜΜ')
+    qty = models.DecimalField(max_digits=17, decimal_places=2, default=1, verbose_name='Ποσότητα')
+    value = models.DecimalField(max_digits=17, decimal_places=2, verbose_name='Τιμή')
+
+    discount = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name='Εκπτωση')
+    discount_value = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name='Ποσο Εκπτωσης')
+
+    clean_value = models.DecimalField(max_digits=17, decimal_places=2, verbose_name='Αξια')
+    total_clean_value = models.DecimalField(max_digits=17, decimal_places=2, verbose_name='Καθαρη Αξια')
+    taxes_modifier = models.CharField(max_length=1, choices=TAXES_CHOICES, default='c')
+    taxes_value = models.DecimalField(max_digits=17, decimal_places=2, verbose_name='Αξια ΦΠΑ')
+    total_value = models.DecimalField(max_digits=17, decimal_places=2, verbose_name='Τελικη Αξία')
+
+    # this fields is exlusive to calculate price buy
+    used_qty = models.DecimalField(max_digits=17, decimal_places=2, default=0)
+    remaining_qty = models.DecimalField(max_digits=17, decimal_places=2, default=0)
+    remaining_total_cost = models.DecimalField(max_digits=17, decimal_places=2, default=0)
+
+    class Meta:
+        ordering = ['-date', 'id']
+
+    def __str__(self):
+        return self.product.title
+    
+
+    def save(self, *args, **kwargs):
+        self.clean_value = Decimal(self.value) * ((100 - Decimal(self.discount)) / 100)
+        self.discount_value = (Decimal(self.value) * Decimal(self.discount / 100)) * (self.qty)
+        self.total_clean_value = self.clean_value * self.qty
+
+        self.taxes_value = Decimal(self.total_clean_value) * Decimal(self.get_taxes_modifier_display() / 100)
+        self.total_value = Decimal(self.total_clean_value) + Decimal(self.taxes_value)
+        self.remaining_qty = self.qty - self.used_qty
+        self.remaining_total_cost = self.remaining_qty * self.value
+        self.date = self.invoice.date
+        super().save(*args, **kwargs)
+        self.invoice.save()
+        self.product.price_buy = self.value
+        self.product.save()
+
+    def get_delete_url(self):
+        return reverse('vendors:delete_invoice_item', kwargs={'pk': self.id})
+
+
+
+    def tag_value(self):
+        str_value = str(self.value).replace('.', ',')
+        return str_value
+
+    def tag_clean_value(self):
+        return str(self.clean_value).replace('.', ',')
+
+    def final_value(self):
+        return round(self.value * ((100 - self.discount) / 100), 2)
+
+    def tag_total_value(self):
+        return str(self.total_clean_value).replace('.', ',')
+
+    def tag_discount(self):
+        return str(self.discount).replace('.', ',')
+
+    def tag_date(self):
+        return self.invoice.date
+
+
+    def transcation_type(self):
+        return self.invoice.get_order_type_display()
+
+    def transcation_person(self):
+        return self.invoice.vendor
+
+    @staticmethod
+    def filters_data(request, qs):
+        date_start, date_end, date_range = initial_date(request, 6)
+        vendor_name = request.GET.getlist('vendor_name', None)
+
+        qs = qs.filter(vendor__id__in=vendor_name) if vendor_name else qs
+
+        if date_start and date_end:
+            qs = qs.filter(invoice__date__range=[date_start, date_end])
         return qs
 
 

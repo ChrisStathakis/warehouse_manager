@@ -134,11 +134,9 @@ def add_product_to_invoice_action_view(request, pk, dk):
         'sell_price': product.final_value,
 
     })
-
     back_url, form_title = instance.get_edit_url(), f'{product.title}'
     if form.is_valid():
         new_item = form.save()
-        print('new_item', new_item.product)
         product.value = form.cleaned_data.get('sell_price', 0)
         product.save()
         return redirect(instance.get_edit_url())
@@ -148,6 +146,8 @@ def add_product_to_invoice_action_view(request, pk, dk):
 @staff_member_required()
 def update_invoice_item_view(request, pk):
     instance = get_object_or_404(InvoiceItem, id=pk)
+    product = instance.product
+    detail_form = True
     form = UpdateInvoiceItemForm(request.POST or None, instance=instance)
     if form.is_valid():
         form.save()
@@ -167,6 +167,7 @@ def print_invoice_view(request, pk):
         total_clean=Sum('clean_value'),
         total=Sum('total_value')
     ).order_by('taxes_modifier')
+    
     for item in different_taxes:
         if item['taxes_modifier'] == 'b':
             item['taxes_modifier'] = '13%'
@@ -235,6 +236,22 @@ def locked_invoice_view(request, pk):
         messages.warning(request, e)
     '''
     instance.save()
+    # this is extra, trying to remove automatically the qty
+
+    for item in instance.order_items.all():
+        invoices = item.product.invoice_vendor_items.filter(remaining_qty__gt=0)
+        quantity_to_sell = item.qty
+        for invoice in invoices.order_by("date"):
+            if quantity_to_sell > 0:
+                if invoice.remaining_qty >= quantity_to_sell:
+                    invoice.used_qty += quantity_to_sell
+                    invoice.save()
+                    quantity_to_sell = 0
+                else:
+                    invoice.used_qty += invoice.remaining_qty
+                    quantity_to_sell -=  invoice.remaining_qty
+                    invoice.save()
+ 
     return redirect(instance.get_edit_url())
 
 

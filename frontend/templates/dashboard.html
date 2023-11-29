@@ -1,6 +1,4 @@
 
-
-
 <!DOCTYPE html>
 <html lang="en">
 {% include 'include/css.html' %}
@@ -93,7 +91,7 @@
                           <div class="col-7 col-md-8">
                             <div class="numbers">
                               <p class="card-category">Έσοδα Μηνα</p>
-                              <p class="card-title">{{ monthly_incomes }} {{ currency }}
+                              <p class="card-title">{{ monthly_incomes|floatformat:2 }} {{ currency }}
                                 <p>
                             </div>
                           </div>
@@ -119,7 +117,7 @@
                           <div class="col-7 col-md-8">
                             <div class="numbers">
                               <p class="card-category">Υπολοιπο Λογαριασμών</p>
-                              <p class="card-title">{{ bills_pending_cost }} {{ currency }}
+                              <p class="card-title">{{ bills_pending_cost|floatformat:2 }} {{ currency }}
                                 <p>
                             </div>
                           </div>
@@ -145,7 +143,7 @@
                           <div class="col-7 col-md-8">
                             <div class="numbers">
                               <p class="card-category">Υπόλοιπο Επιταγων</p>
-                              <p class="card-title">{{ paycheck_money }} {{ currency }}
+                              <p class="card-title">{{ paycheck_money|floatformat:2 }} {{ currency }}
                                 <p>
                             </div>
                           </div>
@@ -171,7 +169,7 @@
                           <div class="col-7 col-md-8">
                             <div class="numbers">
                               <p class="card-category">Υπολοιπο Προμηθευτων</p>
-                              <p class="card-title">{{ vendors_cost }} {{ currency }}
+                              <p class="card-title">{{ vendors_cost|floatformat:2 }} {{ currency }}
                                 <p>
                             </div>
                           </div>
@@ -233,7 +231,7 @@
                         <p class="card-category">Τελευταιες 30 καταχωρησεις</p>
                       </div>
                       <div class="card-body"  style="overflow:scroll; height:400px;">
-                        <table class="table table-responsive table-bordered">
+                        <table class="table table-bordered">
                             <thead>
                                 <tr>
                                     <th>Ημερομηνια</th>

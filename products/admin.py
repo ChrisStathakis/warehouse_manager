@@ -38,10 +38,10 @@ class ProductAdmin(ImportExportModelAdmin):
     inlines = [VendorInline, ]
     search_fields = ['title', 'product_vendors__vendor__title']
     list_filter = ['active', 'taxes_modifier', 'categories', 'vendors']
-    list_editable = ['qty', 'value', 'value_per_unit', 'value_discount']
+    list_editable = ['qty', 'value',]
     filter_horizontal = ['categories']
     list_display_links = ['title']
-    list_display = ['sku', 'title', 'qty',  'value', 'value_per_unit', 'value_discount', 'tag_final_value']
+    list_display = ['sku', 'title', 'qty',  'value', 'tag_final_value']
     readonly_fields = ['tag_final_value']
     paginate_by = 30
     save_as = True
